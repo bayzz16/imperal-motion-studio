@@ -1,18 +1,21 @@
 import React from 'react';
 import {Composition} from 'remotion';
-import {TunasKecil} from './TunasKecil';
+import {VIDEO_PROJECTS} from './projects/registry';
 
 export const Root: React.FC = () => {
   return (
     <>
-      <Composition
-        id="TunasKecil"
-        component={TunasKecil}
-        durationInFrames={2700}
-        fps={30}
-        width={1080}
-        height={1920}
-      />
+      {VIDEO_PROJECTS.map((project) => (
+        <Composition
+          key={project.id}
+          id={project.id}
+          component={project.component}
+          durationInFrames={project.durationInFrames}
+          fps={project.fps}
+          width={project.width}
+          height={project.height}
+        />
+      ))}
     </>
   );
 };
