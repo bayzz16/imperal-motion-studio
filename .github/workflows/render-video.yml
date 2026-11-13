@@ -57,8 +57,8 @@ jobs:
 
       - name: Render MP4
         env:
-          COMPOSITION_ID: ${{ inputs.composition_id }}
-          OUTPUT_FILENAME: ${{ inputs.output_filename }}
+          COMPOSITION_ID: ${{ inputs.composition_id || 'TunasKecil' }}
+          OUTPUT_FILENAME: ${{ inputs.output_filename || 'tunas-kecil.mp4' }}
         run: |
           mkdir -p out
           npx remotion render src/index.tsx "$COMPOSITION_ID" "out/$OUTPUT_FILENAME" --concurrency=2 --log=verbose
