@@ -26,7 +26,7 @@ fs.writeFileSync(tempPath, narration, 'utf8');
 
 const result = spawnSync(
   'espeak-ng',
-  ['-v', 'id', '-s', '132', '-p', '30', '-a', '180', '-f', tempPath, '-w', outputPath],
+  ['-v', 'id', '-s', '150', '-p', '30', '-a', '180', '-f', tempPath, '-w', outputPath],
   {encoding: 'utf8'},
 );
 
