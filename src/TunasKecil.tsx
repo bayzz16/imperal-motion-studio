@@ -6,23 +6,12 @@ const SCENE_LENGTH = 338;
 const scenes = [
   {tag:'SEBUAH AWAL',title:'Semua bermula\ndari satu benih.',sub:'Sebuah ide kecil berani diberi kesempatan untuk tumbuh.',tone:'#142c35',accent:'#8bbd9a',action:'seed'},
   {tag:'MENYUSUN MIMPI',title:'Ide mulai\nmenjadi rencana.',sub:'Mereka menyusun tujuan, membagi tugas, dan menyiapkan langkah pertama.',tone:'#1c3544',accent:'#9dc5d2',action:'plan'},
-  {tag:'DELAPAN KEAHLIAN',title:'Delapan orang\nmembawa kekuatan.',sub:'Desain, teknologi, riset, komunikasi, dan banyak kemampuan lain.',tone:'#28294a',accent:'#c1b4ed',action:'team'},
-  {tag:'MULAI BERKARYA',title:'Masing-masing\ mulai mengambil peran.',sub:'Pekerjaan kecil disatukan menjadi sesuatu yang lebih besar.',tone:'#1d3c3a',accent:'#a9d4a8',action:'work'},
+  {tag:'DELAPAN KEAHLIAN',title:'Beragam skill\nsaling menguatkan.',sub:'Desain, teknologi, riset, komunikasi, dan kemampuan lain berpadu.',tone:'#28294a',accent:'#c1b4ed',action:'skills'},
+  {tag:'MULAI BERKARYA',title:'Setiap keahlian\nmulai mengambil peran.',sub:'Pekerjaan kecil disatukan menjadi sesuatu yang lebih besar.',tone:'#1d3c3a',accent:'#a9d4a8',action:'work'},
   {tag:'ADA TANTANGAN',title:'Tidak semua\nberjalan mulus.',sub:'Kesalahan ditemukan. Rencana perlu diperbaiki. Tim tidak menyerah.',tone:'#432e3a',accent:'#e2ad9a',action:'challenge'},
   {tag:'BELAJAR BERSAMA',title:'Mereka mencoba\nsekali lagi.',sub:'Saling membantu, memperbaiki, dan tumbuh dari pengalaman.',tone:'#354333',accent:'#c7d99b',action:'learn'},
   {tag:'HASIL KERJA TIM',title:'Perlahan, usaha\nmenjadi nyata.',sub:'Ide yang dulu kecil kini mulai memberi hasil.',tone:'#233b4b',accent:'#a5d8df',action:'growth'},
-  {tag:'SATU IMPIAN',title:'Tumbuh bersama.\nMelangkah lebih jauh.',sub:'TUNAS KECIL — Delapan karyawan, satu impian.',tone:'#183c38',accent:'#c5e1ad',action:'final'},
-];
-
-const roles = [
-  {name:'Pemimpin',color:'#e8b77f',hair:'#293342'},
-  {name:'Desainer',color:'#d88f9c',hair:'#302b40'},
-  {name:'Programmer',color:'#80b8c8',hair:'#292e36'},
-  {name:'Riset',color:'#a9c58c',hair:'#41342c'},
-  {name:'Marketing',color:'#d5a2e0',hair:'#322b38'},
-  {name:'Keuangan',color:'#e0c17c',hair:'#3b302c'},
-  {name:'Operasional',color:'#8ca9df',hair:'#2c3444'},
-  {name:'Kreatif',color:'#d59d75',hair:'#352b32'},
+  {tag:'SATU IMPIAN',title:'Tumbuh bersama.\nMelangkah lebih jauh.',sub:'TUNAS KECIL — Beragam keahlian, satu impian.',tone:'#183c38',accent:'#c5e1ad',action:'final'},
 ];
 
 const Plant: React.FC<{frame:number}> = ({frame}) => {
@@ -52,40 +41,15 @@ const Plant: React.FC<{frame:number}> = ({frame}) => {
   </g>;
 };
 
-const Person: React.FC<{index:number; frame:number}> = ({index,frame}) => {
-  const role=roles[index];
-  const bob=Math.sin(frame/12+index)*3;
-  const wave=Math.sin(frame/9+index)*9;
-  return <g transform={`translate(0 ${bob})`}>
-    <ellipse cx="0" cy="111" rx="31" ry="7" fill="#07191c" opacity=".28"/>
-    <path d="M-17 77 L-21 105 M17 77 L21 105" stroke="#e8e2d6" strokeWidth="10" strokeLinecap="round"/>
-    <path d={`M-29 30 Q-34 15 -22 12 L22 12 Q34 15 29 30 L24 78 Q0 91 -24 78Z`} fill={role.color}/>
-    <path d={`M-25 38 Q-45 45 -35 ${53+wave/2} M25 38 Q45 45 35 ${53-wave/2}`} stroke="#e8e2d6" strokeWidth="9" fill="none" strokeLinecap="round"/>
-    <circle cx="0" cy="0" r="25" fill="#dcae8c"/>
-    <path d="M-25 -2 Q-27 -31 0 -29 Q29 -28 25 0 Q12 -14 -1 -14 Q-14 -14 -25 -2Z" fill={role.hair}/>
-    <circle cx="-8" cy="2" r="2.5" fill="#28313a"/><circle cx="8" cy="2" r="2.5" fill="#28313a"/>
-    <path d="M-5 13 Q0 17 5 13" stroke="#8f5e53" strokeWidth="2" fill="none" strokeLinecap="round"/>
-  </g>;
-};
-
-const Team: React.FC<{frame:number; visible:boolean}> = ({frame,visible}) => {
-  const opacity=visible?interpolate(frame,[520,650],[0,1],{extrapolateRight:'clamp'}):0;
-  return <g opacity={opacity}>
-    {roles.map((r,i)=>{
-      const x=120+(i%4)*280;
-      const y= i<4 ? 1080 : 1400;
-      const delay=i*5;
-      return <g key={r.name} transform={`translate(${x} ${y})`}>
-        <rect x="-105" y="-58" width="210" height="205" rx="25" fill="#f4f1e7" opacity=".1" stroke="#fff" strokeOpacity=".18"/>
-        <g transform="translate(0 -15) scale(.82)"><Person index={i} frame={frame+delay}/></g>
-        <text x="0" y="123" textAnchor="middle" fill="#f8f4e9" fontSize="21" fontWeight="600">{r.name}</text>
-      </g>;
-    })}
-  </g>;
-};
-
 const SceneProp: React.FC<{action:string; frame:number; accent:string}> = ({action,frame,accent}) => {
   const pulse=1+Math.sin(frame/12)*.035;
+  if(action==='skills') return <g transform="translate(760 700)">
+    {['DESAIN','TEKNOLOGI','RISET','KOMUNIKASI','KREATIF','OPERASIONAL'].map((label,i)=><g key={label} transform={`translate(${(i%3-1)*190} ${Math.floor(i/3)*150-75})`}>
+      <circle r="48" fill={accent} opacity=".18" stroke={accent} strokeWidth="4"/>
+      <path d={i===0?'M-20 18 L20 -18 M-18 -18 L18 18':i===1?'M-22 -12 H22 V12 H-22Z M-10 -2 H10':i===2?'M-18 18 L0 -20 L18 18 M-10 6 H10':i===3?'M-24 -12 H24 V12 H-24Z M-16 -2 H16':i===4?'M0 -24 L7 -7 L24 0 L7 7 L0 24 L-7 7 L-24 0 L-7 -7Z':'M-20 -18 H20 V18 H-20Z M-10 -5 H10 M-10 6 H10'} fill="none" stroke={accent} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round"/>
+      <text x="0" y="76" textAnchor="middle" fill="#f8f4e9" fontSize="17" fontWeight="700" letterSpacing="1">{label}</text>
+    </g>)}
+  </g>;
   if(action==='plan') return <g transform={`translate(760 700) scale(${pulse})`}>
     <rect x="-150" y="-90" width="300" height="185" rx="18" fill="#e9e5d9"/>
     <path d="M-105 -40 H90 M-105 0 H50 M-105 40 H105" stroke="#77918a" strokeWidth="10" strokeLinecap="round"/>
@@ -130,7 +94,6 @@ export const TunasKecil: React.FC = () => {
   const fade=interpolate(localFrame,[0,18,310,338],[0,1,1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
   const titleY=interpolate(localFrame,[0,30],[35,0],{extrapolateRight:'clamp'});
   const musicVolume=interpolate(frame,[0,60,2580,2700],[0,0.22,0.22,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  const teamVisible=sceneIndex>=2;
   return <>
     <Audio src={staticFile('audio/music-bed.wav')} volume={musicVolume}/>
     <Audio src={staticFile('audio/soft-chime.wav')} from={0} volume={0.28}/>
@@ -158,7 +121,6 @@ export const TunasKecil: React.FC = () => {
         <g opacity=".85"><path d="M0 950 Q250 870 540 940 T1080 920 V1920 H0Z" fill="#0d292a" opacity=".5"/></g>
         <g transform="translate(50 500) scale(.72)"><Plant frame={frame}/></g>
         <SceneProp action={scene.action} frame={frame} accent={scene.accent}/>
-        <Team frame={frame} visible={teamVisible}/>
       </svg>
       <div style={{position:'absolute',bottom:75,left:70,right:70}}>
         <div style={{height:4,background:'rgba(255,255,255,.18)',borderRadius:8}}>
