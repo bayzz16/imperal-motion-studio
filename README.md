@@ -2,14 +2,20 @@
 
 A reusable, multi-project video production workspace powered by [Remotion](https://www.remotion.dev/). Each video is an independent composition registered in the shared project registry.
 
-## Included
+## Included projects
+
+- **TunasKecil** — the original 90-second vertical sample about a small team growing through collaboration.
+- **TunasDewa** — an 90-second cinematic sequel about a seed growing into a monumental tree, with eight skills, setbacks, recovery, transformation, Indonesian narration, music, and sound effects.
+
+Both projects are separate Remotion compositions registered in `src/projects/registry.ts`. TunasKecil remains intact.
+
+## Shared studio capabilities
 
 - Remotion Studio for previewing compositions.
-- A 90-second vertical sample composition: **TunasKecil**.
-- A project registry at `src/projects/registry.ts` for adding independent compositions.
+- Project registry for independent compositions.
 - Reusable sequential scene-timeline planning and a Remotion `SceneSequence` adapter.
-- Automated unit tests for scene-timeline placement and input validation.
-- A deterministic camera-movement utility in `src/motion/camera-moves.ts`.
+- Automated scene-timeline unit tests.
+- Deterministic camera-movement utility in `src/motion/camera-moves.ts`.
 - GitHub Actions rendering to MP4, with downloadable artifacts retained for 14 days.
 
 ## Run locally
@@ -29,24 +35,34 @@ npm test
 npm run compositions
 ```
 
-The timeline tests run with Node's built-in test runner and do not require an additional test framework.
-
-## Render locally
+## Render Tunas Kecil
 
 ```bash
 npm run render:tunas
 ```
 
-The MP4 is written to `out/tunas-kecil.mp4`.
+Output: `out/tunas-kecil.mp4`.
+
+## Render Tunas Dewa with narration
+
+Install eSpeak NG first, and make sure the `espeak-ng` command is available in your terminal. The renderer uses its Indonesian voice to synthesize the narration WAV locally.
+
+```bash
+npm run render:tunas-dewa
+```
+
+Output: `out/tunas-dewa.mp4`.
+
+**Voice quality note:** the included Indonesian narration is generated with eSpeak NG, an offline speech synthesizer. It is a real spoken audio track, but it has a noticeably synthetic/computer-generated timbre rather than a natural studio voice. The narration WAV can be replaced with a recording or a separately licensed TTS voice without changing the video composition.
 
 ## Render on GitHub
 
 The **Render video** workflow supports both:
 
-- **Automatic validation/rendering:** pushes to `main` that change files under `.github/workflows/`, `src/`, `scripts/`, `public/`, or `package.json`.
-- **Manual rendering:** open **Actions → Render video → Run workflow**, then enter a registered composition ID and an MP4 filename.
+- **Automatic rendering:** pushes to `main` that change files under `.github/workflows/`, `src/`, `scripts/`, `public/`, or `package.json`. The default render is now **TunasDewa**.
+- **Manual rendering:** open **Actions → Render video → Run workflow**, then enter a registered composition ID and an MP4 filename. Available IDs: `TunasKecil` and `TunasDewa`.
 
-The workflow runs TypeScript validation, unit tests, input validation, audio generation, MP4 rendering, and artifact upload. After a successful run, download the MP4 from that run's **Artifacts** section.
+The workflow installs eSpeak NG, runs TypeScript validation and unit tests, generates music/SFX and Indonesian narration, renders MP4, and uploads the artifact. After a successful run, download the MP4 from that run's **Artifacts** section.
 
 ## Add another video project
 
@@ -56,62 +72,18 @@ The workflow runs TypeScript validation, unit tests, input validation, audio gen
 4. Keep project-specific assets in a dedicated folder under `public/`.
 5. Run `npm run typecheck`, `npm test`, and `npm run compositions`, then render the new composition.
 
-The shared registry is project-agnostic; **TunasKecil is only the current sample project**.
+The shared registry is project-agnostic; neither TunasKecil nor TunasDewa is hard-coded into the studio core.
 
 ## Build a sequential scene timeline
 
-`buildSceneTimeline` validates scene IDs and frame durations, then calculates each scene's start and exclusive end frame. `SceneSequence` maps an individual placement to Remotion's `Sequence` component:
-
-```tsx
-import {buildSceneTimeline} from './timeline/scene-timeline';
-import {SceneSequence} from './timeline/SceneSequence';
-
-const timeline = buildSceneTimeline([
-  {id: 'opening', durationInFrames: 90},
-  {id: 'main', durationInFrames: 180, gapBeforeFrames: 12},
-]);
-
-export const ExampleScenes = () => (
-  <>
-    {timeline.scenes.map((placement) => (
-      <SceneSequence key={placement.id} placement={placement}>
-        <div>{placement.id}</div>
-      </SceneSequence>
-    ))}
-  </>
-);
-```
-
-Each scene's child frame clock starts at zero. The planner handles sequential placement and gaps; it does not yet implement overlapping layers or transitions. Put simultaneous visual layers inside a scene or on separate timeline tracks.
+`buildSceneTimeline` validates scene IDs and frame durations, then calculates each scene's start and exclusive end frame. `SceneSequence` maps an individual placement to Remotion's `Sequence` component. The planner handles sequential placement and gaps; it does not yet implement overlapping layers or transitions.
 
 ## Dialogue voice library
 
-The voice library lives in `src/voice/`:
-
-- `male-lead` (Arka) and `female-lead` (Nara) are the default lead voice profiles.
-- Six supporting profiles are available for larger casts.
-- `VoiceTrack` places prepared dialogue recordings on the Remotion timeline.
-
-Voice profiles are creative metadata, not generated audio. No text-to-speech provider is currently configured. Add recordings you own or are licensed to use under `public/voices/<profile-id>/`, then reference them in a composition with `VoiceTrack`. See [public/voices/README.md](public/voices/README.md) for the folder convention.
-
-Example cue:
-
-```tsx
-const dialogue = [
-  {
-    speaker: 'male-lead',
-    audioFile: 'voices/male-lead/scene-01.wav',
-    from: 120,
-    volume: 0.9,
-  },
-];
-
-// Inside the composition:
-// <VoiceTrack cues={dialogue} />
-```
+The reusable voice library lives in `src/voice/`. It contains voice-profile metadata and a playback component for prepared recordings. The Tunas Dewa composition uses a separate generated narration WAV so that its narration can be replaced independently.
 
 ## Verification status
 
-The last confirmed end-to-end render was GitHub Actions run 18 for commit `4541fcf`, which completed TypeScript validation, audio generation, MP4 rendering, and artifact upload. A separate manual visual/audio review of that MP4 has not been recorded. Newer commits must pass their own workflow before being described as fully verified.
+Do not describe a new composition as fully verified until its own GitHub Actions run completes TypeScript validation, tests, narration generation, MP4 rendering, and artifact upload. A successful render confirms the automated pipeline; a separate manual visual and audio review is still needed for creative quality assurance.
 
 Do not commit secrets, private API keys, or media you do not have permission to use.
