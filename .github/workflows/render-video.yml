@@ -1,0 +1,65 @@
+name: Render video
+
+on:
+  workflow_dispatch:
+    inputs:
+      composition_id:
+        description: "Composition ID registered in src/Root.tsx"
+        required: true
+        default: "TunasKecil"
+        type: string
+      output_filename:
+        description: "MP4 filename (without folders)"
+        required: true
+        default: "tunas-kecil.mp4"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate render inputs
+        env:
+          COMPOSITION_ID: ${{ inputs.composition_id }}
+          OUTPUT_FILENAME: ${{ inputs.output_filename }}
+        run: |
+          if [[ ! "$COMPOSITION_ID" =~ ^[A-Za-z0-9_-]+$ ]]; then
+            echo "Invalid composition ID"
+            exit 1
+          fi
+          if [[ ! "$OUTPUT_FILENAME" =~ ^[A-Za-z0-9_-]+\.mp4$ ]]; then
+            echo "Filename must contain only letters, numbers, dash, underscore, and end in .mp4"
+            exit 1
+          fi
+
+      - name: Render MP4
+        env:
+          COMPOSITION_ID: ${{ inputs.composition_id }}
+          OUTPUT_FILENAME: ${{ inputs.output_filename }}
+        run: |
+          mkdir -p out
+          npx remotion render src/index.tsx "$COMPOSITION_ID" "out/$OUTPUT_FILENAME"
+
+      - name: Upload MP4 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: imperal-video-${{ github.run_number }}
+          path: out/*.mp4
+          if-no-files-found: error
+          retention-days: 14
