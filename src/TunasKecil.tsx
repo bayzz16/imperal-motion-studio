@@ -2,7 +2,6 @@ import React from 'react';
 import {Audio} from '@remotion/media';
 import {AbsoluteFill, interpolate, staticFile, useCurrentFrame} from 'remotion';
 
-const FPS = 30;
 const SCENE_LENGTH = 338;
 const scenes = [
   {tag:'SEBUAH AWAL',title:'Semua bermula\ndari satu benih.',sub:'Sebuah ide kecil berani diberi kesempatan untuk tumbuh.',tone:'#142c35',accent:'#8bbd9a',action:'seed'},
@@ -32,7 +31,7 @@ const Plant: React.FC<{frame:number}> = ({frame}) => {
   const leaf = interpolate(frame,[170,500],[0,1],{extrapolateRight:'clamp'});
   const crown = interpolate(frame,[1450,2500],[0,1],{extrapolateRight:'clamp'});
   const sway = Math.sin(frame/25)*2.4;
-  return <svg viewBox="0 0 520 520" width="100%" height="100%" style={{overflow:'visible'}}>
+  return <g>
     <ellipse cx="260" cy="460" rx="190" ry="28" fill="#091b1d" opacity=".35"/>
     <path d="M80 450 Q260 420 440 450 L420 488 Q260 520 100 488Z" fill="#70513b"/>
     <path d="M90 449 Q260 430 430 449" fill="none" stroke="#b18a60" strokeWidth="9" strokeLinecap="round"/>
@@ -50,7 +49,7 @@ const Plant: React.FC<{frame:number}> = ({frame}) => {
       <path d="M0 15 Q-10 -65 -32 -127 M0 5 Q54 -72 91 -125" stroke="#d7e9b5" strokeWidth="5" fill="none"/>
     </g>
     <circle cx="260" cy="455" r="13" fill="#e7c58c"/>
-  </svg>;
+  </g>;
 };
 
 const Person: React.FC<{index:number; frame:number}> = ({index,frame}) => {
