@@ -1,0 +1,22 @@
+{
+  "name": "imperal-motion-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-project Remotion video production workspace for IMPERAL.",
+  "scripts": {
+    "studio": "remotion studio src/index.tsx",
+    "render:tunas": "remotion render src/index.tsx TunasKecil out/tunas-kecil.mp4",
+    "compositions": "remotion compositions src/index.tsx"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.543",
+    "remotion": "4.0.543",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.79",
+    "@types/react-dom": "18.2.25",
+    "typescript": "5.4.5"
+  }
+}
