@@ -5,7 +5,7 @@
   "description": "Multi-project Remotion video production workspace for IMPERAL.",
   "scripts": {
     "studio": "remotion studio src/index.tsx",
-    "render:tunas": "remotion render src/index.tsx TunasKecil out/tunas-kecil.mp4",
+    "render:tunas": "node scripts/generate-audio.cjs && remotion render src/index.tsx TunasKecil out/tunas-kecil.mp4",
     "compositions": "remotion compositions src/index.tsx"
   },
   "dependencies": {
