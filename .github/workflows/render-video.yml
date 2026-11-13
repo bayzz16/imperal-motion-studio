@@ -55,6 +55,9 @@ jobs:
             exit 1
           fi
 
+      - name: Generate original audio assets
+        run: node scripts/generate-audio.cjs
+
       - name: Render MP4
         env:
           COMPOSITION_ID: ${{ inputs.composition_id || 'TunasKecil' }}
