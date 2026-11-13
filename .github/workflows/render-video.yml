@@ -1,6 +1,10 @@
 name: Render video
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/render-video.yml'
   workflow_dispatch:
     inputs:
       composition_id:
@@ -16,6 +20,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: imperal-video-render-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   render:
@@ -35,8 +43,8 @@ jobs:
 
       - name: Validate render inputs
         env:
-          COMPOSITION_ID: ${{ inputs.composition_id }}
-          OUTPUT_FILENAME: ${{ inputs.output_filename }}
+          COMPOSITION_ID: ${{ inputs.composition_id || 'TunasKecil' }}
+          OUTPUT_FILENAME: ${{ inputs.output_filename || 'tunas-kecil.mp4' }}
         run: |
           if [[ ! "$COMPOSITION_ID" =~ ^[A-Za-z0-9_-]+$ ]]; then
             echo "Invalid composition ID"
