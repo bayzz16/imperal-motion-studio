@@ -24,11 +24,14 @@ const tempPath = path.join(os.tmpdir(), 'tunas-dewa-narration.txt');
 fs.mkdirSync(outputDirectory, {recursive: true});
 fs.writeFileSync(tempPath, narration, 'utf8');
 
-const result = spawnSync(
-  'espeak-ng',
-  ['-v', 'id', '-s', '150', '-p', '30', '-a', '180', '-f', tempPath, '-w', outputPath],
-  {encoding: 'utf8'},
-);
+const args = ['-v', 'id', '-s', '150', '-p', '30', '-a', '180', '-f', tempPath, '-w', outputPath];
+let engine = 'espeak-ng';
+let result = spawnSync(engine, args, {encoding: 'utf8'});
+
+if (result.error && result.error.code === 'ENOENT') {
+  engine = 'espeak';
+  result = spawnSync(engine, args, {encoding: 'utf8'});
+}
 
 try {
   fs.unlinkSync(tempPath);
@@ -37,7 +40,7 @@ try {
 }
 
 if (result.error) {
-  throw new Error('eSpeak NG is required to generate Indonesian narration. Install espeak-ng first.');
+  throw new Error('eSpeak NG (or compatible eSpeak) is required to generate Indonesian narration. Install espeak-ng first.');
 }
 
 if (result.status !== 0) {
@@ -58,4 +61,4 @@ if (!Number.isFinite(durationSeconds) || durationSeconds < 10 || durationSeconds
   throw new Error(`Narration duration must be between 10 and 89.5 seconds; received ${durationSeconds.toFixed(2)} seconds. Adjust the speech rate or script.`);
 }
 
-console.log(`Generated Indonesian Tunas Dewa narration: ${durationSeconds.toFixed(2)} seconds`);
+console.log(`Generated Indonesian Tunas Dewa narration with ${engine}: ${durationSeconds.toFixed(2)} seconds`);
