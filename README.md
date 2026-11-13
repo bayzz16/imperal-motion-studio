@@ -1,13 +1,15 @@
 # IMPERAL Motion Studio
 
-A multi-project video production workspace powered by [Remotion](https://www.remotion.dev/). Each video is a separate composition, so this repository can grow beyond the first sample project.
+A reusable, multi-project video production workspace powered by [Remotion](https://www.remotion.dev/). Each video is an independent composition registered in the shared project registry.
 
 ## Included
 
 - Remotion Studio for previewing compositions.
 - A 90-second vertical sample composition: **TunasKecil**.
-- Manual GitHub Actions workflow to render a composition to MP4.
-- MP4 delivery as a downloadable Actions artifact (kept for 14 days).
+- A project registry at `src/projects/registry.ts` for adding independent compositions.
+- Reusable sequential scene-timeline planning and a Remotion `SceneSequence` adapter.
+- A deterministic camera-movement utility in `src/motion/camera-moves.ts`.
+- GitHub Actions rendering to MP4, with downloadable artifacts retained for 14 days.
 
 ## Run locally
 
@@ -28,37 +30,58 @@ The MP4 is written to `out/tunas-kecil.mp4`.
 
 ## Render on GitHub
 
-1. Open the **Actions** tab.
-2. Select **Render video**.
-3. Click **Run workflow**.
-4. Enter a composition ID (the sample is `TunasKecil`) and an MP4 filename.
-5. Wait for the workflow to finish successfully.
-6. Download the MP4 from the run's **Artifacts** section.
+The **Render video** workflow supports both:
 
-The workflow is manual; it does not render on every push.
+- **Automatic validation/rendering:** pushes to `main` that change files under `.github/workflows/`, `src/`, `scripts/`, `public/`, or `package.json`.
+- **Manual rendering:** open **Actions → Render video → Run workflow**, then enter a registered composition ID and an MP4 filename.
 
-## Add another video
+After a successful run, download the MP4 from that run's **Artifacts** section.
 
-1. Create a new composition component under `src/` or a subfolder such as `src/projects/`.
-2. Register it in `src/Root.tsx` with a unique composition ID.
-3. Run it locally or enter that ID in the GitHub Actions workflow.
+## Add another video project
 
-Keep each project's assets in a dedicated folder under `public/`. Do not commit secrets, private API keys, or licensed media without permission.
+1. Create a new composition component in `src/` or a dedicated project folder.
+2. Add its metadata and component to `VIDEO_PROJECTS` in `src/projects/registry.ts`.
+3. Give it a unique Remotion composition ID and its own duration, frame rate, and dimensions.
+4. Keep project-specific assets in a dedicated folder under `public/`.
+5. Run `npm run typecheck` and `npm run compositions`, then render the new composition.
 
-## Verification status
+The shared registry is project-agnostic; **TunasKecil is only the current sample project**.
 
-The repository scaffold is committed, but the first GitHub Actions render still needs to be run. A successful workflow and a downloadable MP4 artifact are the proof that rendering works end-to-end.
+## Build a sequential scene timeline
 
+`buildSceneTimeline` validates scene IDs and frame durations, then calculates each scene's start and exclusive end frame. `SceneSequence` maps an individual placement to Remotion's `Sequence` component:
 
-## Reusable dialogue voices
+```tsx
+import {buildSceneTimeline} from './timeline/scene-timeline';
+import {SceneSequence} from './timeline/SceneSequence';
+
+const timeline = buildSceneTimeline([
+  {id: 'opening', durationInFrames: 90},
+  {id: 'main', durationInFrames: 180, gapBeforeFrames: 12},
+]);
+
+export const ExampleScenes = () => (
+  <>
+    {timeline.scenes.map((placement) => (
+      <SceneSequence key={placement.id} placement={placement}>
+        <div>{placement.id}</div>
+      </SceneSequence>
+    ))}
+  </>
+);
+```
+
+Each scene's child frame clock starts at zero. The planner handles sequential placement and gaps; it does not yet implement overlapping layers or transitions. Put simultaneous visual layers inside a scene or on separate timeline tracks.
+
+## Dialogue voice library
 
 The voice library lives in `src/voice/`:
 
-- `male-lead` (Arka) and `female-lead` (Nara) are the default lead voices.
-- Six supporting profiles are available for videos with larger casts.
+- `male-lead` (Arka) and `female-lead` (Nara) are the default lead voice profiles.
+- Six supporting profiles are available for larger casts.
 - `VoiceTrack` places prepared dialogue recordings on the Remotion timeline.
 
-Voice profiles are creative directions, not audio files. The repository does not currently include generated speech or a configured text-to-speech provider. Add recordings you own or are licensed to use under `public/voices/<profile-id>/`, then reference them in a composition with `VoiceTrack`. See [public/voices/README.md](public/voices/README.md) for the folder convention.
+Voice profiles are creative metadata, not generated audio. No text-to-speech provider is currently configured. Add recordings you own or are licensed to use under `public/voices/<profile-id>/`, then reference them in a composition with `VoiceTrack`. See [public/voices/README.md](public/voices/README.md) for the folder convention.
 
 Example cue:
 
@@ -75,3 +98,9 @@ const dialogue = [
 // Inside the composition:
 // <VoiceTrack cues={dialogue} />
 ```
+
+## Verification status
+
+GitHub Actions completed a successful TypeScript validation, audio-generation step, MP4 render, and artifact upload for the `TunasKecil` composition on commit `4541fcf` (workflow run 18). This confirms the automated render pipeline completed; the generated MP4 has not yet received a separate manual visual or audio review.
+
+Do not commit secrets, private API keys, or media you do not have permission to use.
