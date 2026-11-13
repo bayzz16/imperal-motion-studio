@@ -37,3 +37,12 @@ Use this workflow whenever creating or improving a video in this repository.
 - `scripts/`: deterministic asset generation and validation scripts.
 - `public/audio/`: generated/imported sound assets (generated during CI; do not commit generated binaries unless needed).
 - `.agents/skills/imperal-video-production/SKILL.md`: this workflow guide.
+
+
+## Reusable voice cast
+- Keep voice identity separate from each video's dialogue script.
+- Use `src/voice/voice-cast.ts` for the two default lead profiles and optional supporting profiles.
+- Use `VoiceTrack` to place prepared speech files on the timeline.
+- Keep one dialogue line per audio file where practical; store files under `public/voices/<profile-id>/`.
+- Voice profiles are not synthesized speech. Do not claim dialogue is present until real audio files are added, rendered, and heard in the exported MP4.
+- If a TTS provider is added later, document the provider, voice ID, usage rights, required secret names, and generation/retry behavior. Never commit API keys.
