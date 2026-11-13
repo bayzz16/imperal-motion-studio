@@ -1,5 +1,6 @@
 import React from 'react';
-import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
+import {Audio} from '@remotion/media';
+import {AbsoluteFill, interpolate, staticFile, useCurrentFrame} from 'remotion';
 
 const scenes = [
   {title: 'Semua hal besar\nberawal dari kecil.', sub: 'Sebuah ide. Sebuah keberanian untuk memulai.', tag: 'AWAL PERJALANAN', a: '#102b36', b: '#28665c'},
@@ -34,8 +35,23 @@ export const TunasKecil: React.FC = () => {
   const titleY = interpolate(localFrame, [0, 34], [55, 0], {extrapolateRight: 'clamp'});
   const showSeed = sceneIndex === 0 || sceneIndex === 5 || sceneIndex === 7;
 
+  const musicVolume = interpolate(frame, [0, 60, 2580, 2700], [0, 0.24, 0.24, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+
   return (
-    <AbsoluteFill style={{background: `linear-gradient(155deg, ${scene.a}, ${scene.b})`, color: '#f7f5ed', fontFamily: 'Arial, sans-serif', overflow: 'hidden'}}>
+    <>
+      <Audio src={staticFile('audio/music-bed.wav')} volume={musicVolume} />
+      <Audio src={staticFile('audio/soft-chime.wav')} from={0} volume={0.32} />
+      <Audio src={staticFile('audio/seedling.wav')} from={72} volume={0.28} />
+      <Audio src={staticFile('audio/whoosh.wav')} from={320} volume={0.22} />
+      <Audio src={staticFile('audio/soft-chime.wav')} from={675} volume={0.24} />
+      <Audio src={staticFile('audio/whoosh.wav')} from={996} volume={0.22} />
+      <Audio src={staticFile('audio/soft-impact.wav')} from={1352} volume={0.28} />
+      <Audio src={staticFile('audio/whoosh.wav')} from={1672} volume={0.22} />
+      <Audio src={staticFile('audio/seedling.wav')} from={1740} volume={0.2} />
+      <Audio src={staticFile('audio/soft-chime.wav')} from={2028} volume={0.25} />
+      <Audio src={staticFile('audio/whoosh.wav')} from={2348} volume={0.2} />
+      <Audio src={staticFile('audio/soft-chime.wav')} from={2610} volume={0.3} />
+      <AbsoluteFill style={{background: `linear-gradient(155deg, ${scene.a}, ${scene.b})`, color: '#f7f5ed', fontFamily: 'Arial, sans-serif', overflow: 'hidden'}}>
       <AbsoluteFill style={{opacity: .14, backgroundImage: 'radial-gradient(circle at 15% 20%, #fff 0 2px, transparent 3px), radial-gradient(circle at 80% 32%, #fff 0 1px, transparent 2px)', backgroundSize: '90px 90px, 130px 130px'}} />
       <div style={{position: 'absolute', top: 105, left: 76, right: 76, display: 'flex', justifyContent: 'space-between', fontSize: 22, letterSpacing: 5, opacity: .7}}>
         <span>IMPERAL</span><span>01 / 08</span>
@@ -54,6 +70,7 @@ export const TunasKecil: React.FC = () => {
           <span>GROW TOGETHER</span><span>90 SEC</span>
         </div>
       </div>
-    </AbsoluteFill>
+      </AbsoluteFill>
+    </>
   );
 };
