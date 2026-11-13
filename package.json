@@ -6,7 +6,8 @@
   "scripts": {
     "studio": "remotion studio src/index.tsx",
     "render:tunas": "node scripts/generate-audio.cjs && remotion render src/index.tsx TunasKecil out/tunas-kecil.mp4",
-    "compositions": "remotion compositions src/index.tsx"
+    "compositions": "remotion compositions src/index.tsx",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@remotion/cli": "4.0.543",
