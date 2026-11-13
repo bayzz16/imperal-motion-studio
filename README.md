@@ -48,3 +48,30 @@ Keep each project's assets in a dedicated folder under `public/`. Do not commit 
 ## Verification status
 
 The repository scaffold is committed, but the first GitHub Actions render still needs to be run. A successful workflow and a downloadable MP4 artifact are the proof that rendering works end-to-end.
+
+
+## Reusable dialogue voices
+
+The voice library lives in `src/voice/`:
+
+- `male-lead` (Arka) and `female-lead` (Nara) are the default lead voices.
+- Six supporting profiles are available for videos with larger casts.
+- `VoiceTrack` places prepared dialogue recordings on the Remotion timeline.
+
+Voice profiles are creative directions, not audio files. The repository does not currently include generated speech or a configured text-to-speech provider. Add recordings you own or are licensed to use under `public/voices/<profile-id>/`, then reference them in a composition with `VoiceTrack`. See [public/voices/README.md](public/voices/README.md) for the folder convention.
+
+Example cue:
+
+```tsx
+const dialogue = [
+  {
+    speaker: 'male-lead',
+    audioFile: 'voices/male-lead/scene-01.wav',
+    from: 120,
+    volume: 0.9,
+  },
+];
+
+// Inside the composition:
+// <VoiceTrack cues={dialogue} />
+```
