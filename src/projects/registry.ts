@@ -1,4 +1,5 @@
 import type React from 'react';
+import {TunasDewa} from '../TunasDewa';
 import {TunasKecil} from '../TunasKecil';
 
 export type VideoProjectDefinition = {
@@ -12,14 +13,20 @@ export type VideoProjectDefinition = {
 
 /**
  * Central registry for independently authored video projects.
- *
- * Add new projects here instead of placing project-specific imports and
- * composition settings directly in the shared Remotion root.
+ * Add each composition here; project-specific visuals and assets stay isolated.
  */
 export const VIDEO_PROJECTS: VideoProjectDefinition[] = [
   {
     id: 'TunasKecil',
     component: TunasKecil,
+    durationInFrames: 2700,
+    fps: 30,
+    width: 1080,
+    height: 1920,
+  },
+  {
+    id: 'TunasDewa',
+    component: TunasDewa,
     durationInFrames: 2700,
     fps: 30,
     width: 1080,
