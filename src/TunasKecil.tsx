@@ -35,7 +35,7 @@ const Plant: React.FC<{frame:number}> = ({frame}) => {
     <ellipse cx="260" cy="460" rx="190" ry="28" fill="#091b1d" opacity=".35"/>
     <path d="M80 450 Q260 420 440 450 L420 488 Q260 520 100 488Z" fill="#70513b"/>
     <path d="M90 449 Q260 430 430 449" fill="none" stroke="#b18a60" strokeWidth="9" strokeLinecap="round"/>
-    <path d="M260 452 Q250 380 260 ${452-stem}" fill="none" stroke="#b9d69a" strokeWidth="17" strokeLinecap="round"/>
+    <path d={`M260 452 Q250 380 260 ${452-stem}`} fill="none" stroke="#b9d69a" strokeWidth="17" strokeLinecap="round"/>
     <g opacity={leaf} transform={`translate(260 ${452-stem+105}) rotate(${-18+sway})`}>
       <path d="M0 0 C-105 -105 -190 -48 -130 10 C-85 45 -30 34 0 0Z" fill="#83b77f"/>
       <path d="M-5 0 Q-78 -28 -145 -2" stroke="#d2e6ae" strokeWidth="5" fill="none"/>
@@ -72,7 +72,7 @@ const Team: React.FC<{frame:number; visible:boolean}> = ({frame,visible}) => {
   const opacity=visible?interpolate(frame,[520,650],[0,1],{extrapolateRight:'clamp'}):0;
   return <g opacity={opacity}>
     {roles.map((r,i)=>{
-      const x=90+(i%4)*300;
+      const x=120+(i%4)*280;
       const y= i<4 ? 1080 : 1400;
       const delay=i*5;
       return <g key={r.name} transform={`translate(${x} ${y})`}>
@@ -86,12 +86,12 @@ const Team: React.FC<{frame:number; visible:boolean}> = ({frame,visible}) => {
 
 const SceneProp: React.FC<{action:string; frame:number; accent:string}> = ({action,frame,accent}) => {
   const pulse=1+Math.sin(frame/12)*.035;
-  if(action==='plan') return <g transform={`translate(540 570) scale(${pulse})`}>
+  if(action==='plan') return <g transform={`translate(760 700) scale(${pulse})`}>
     <rect x="-150" y="-90" width="300" height="185" rx="18" fill="#e9e5d9"/>
     <path d="M-105 -40 H90 M-105 0 H50 M-105 40 H105" stroke="#77918a" strokeWidth="10" strokeLinecap="round"/>
     <circle cx="105" cy="-50" r="28" fill={accent}/><path d="M90 -50 L102 -37 L123 -65" stroke="#fff" strokeWidth="7" fill="none"/>
   </g>;
-  if(action==='work') return <g transform="translate(540 590)">
+  if(action==='work') return <g transform="translate(760 700)">
     {[0,1,2].map((n)=><g key={n} transform={`translate(${(n-1)*180} 0)`}>
       <rect x="-70" y="-55" width="140" height="95" rx="12" fill="#d8e4df"/>
       <rect x="-58" y="-42" width="116" height="67" rx="6" fill="#284b56"/>
@@ -109,13 +109,13 @@ const SceneProp: React.FC<{action:string; frame:number; accent:string}> = ({acti
     <path d="M-95 35 L-35 -20 L10 15 L85 -55" stroke="#729b83" strokeWidth="13" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
     <path d="M60 -55 H85 V-30" stroke="#729b83" strokeWidth="10" fill="none"/>
   </g>;
-  if(action==='growth'||action==='final') return <g transform="translate(540 585)">
+  if(action==='growth'||action==='final') return <g transform="translate(760 700)">
     {[0,1,2,3].map((n)=><g key={n} transform={`translate(${(n-1.5)*65} 0)`}>
       <rect x="-20" y={-20-n*25} width="40" height={20+n*25} rx="7" fill={accent} opacity=".9"/>
     </g>)}
     <path d="M-170 75 H170" stroke="#f4f1e7" strokeWidth="5" opacity=".6"/>
   </g>;
-  return <g transform="translate(540 600)">
+  return <g transform="translate(760 700)">
     <circle r="95" fill={accent} opacity=".12"/>
     <circle r="60" fill="none" stroke={accent} strokeWidth="5" opacity=".75"/>
     <path d="M-25 0 L-5 22 L35 -28" stroke={accent} strokeWidth="12" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
@@ -156,7 +156,7 @@ export const TunasKecil: React.FC = () => {
       </div>
       <svg viewBox="0 0 1080 1920" width="100%" height="100%" style={{position:'absolute',inset:0}}>
         <g opacity=".85"><path d="M0 950 Q250 870 540 940 T1080 920 V1920 H0Z" fill="#0d292a" opacity=".5"/></g>
-        <g transform="translate(280 480) scale(.92)"><Plant frame={frame}/></g>
+        <g transform="translate(50 500) scale(.72)"><Plant frame={frame}/></g>
         <SceneProp action={scene.action} frame={frame} accent={scene.accent}/>
         <Team frame={frame} visible={teamVisible}/>
       </svg>
