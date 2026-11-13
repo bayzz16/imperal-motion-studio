@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       composition_id:
-        description: "Composition ID registered in src/Root.tsx"
+        description: "Composition ID registered in src/projects/registry.ts"
         required: true
         default: "TunasKecil"
         type: string
@@ -47,6 +47,9 @@ jobs:
 
       - name: TypeScript validation
         run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
 
       - name: Validate render inputs
         env:
