@@ -101,38 +101,158 @@ const Landscape: React.FC<{frame: number; sceneIndex: number; light: string}> = 
       </defs>
       <circle cx={760 - sceneIndex * 26} cy="690" r="330" fill="url(#sun)" opacity={glow} />
       <circle cx={760 - sceneIndex * 26} cy="690" r="84" fill={light} opacity="0.62" filter="url(#softGlow)" />
-      <path d="M0 1010 L180 790 L330 960 L505 720 L720 985 L890 790 L1080 980 V1920 H0Z" fill="#263c4b" opacity="0.66" />
-      <path d="M0 1130 L170 925 L310 1090 L510 870 L690 1100 L870 920 L1080 1090 V1920 H0Z" fill="#1d3540" />
-      <path d="M0 1280 Q180 1140 360 1250 T720 1210 T1080 1240 V1920 H0Z" fill="url(#horizon)" />
       <g opacity="0.74">
         <Cloud x={180 - drift} y={520} scale={1.05} opacity={0.42} />
         <Cloud x={860 - drift * 0.55} y={420} scale={0.78} opacity={0.3} />
         <Cloud x={590 + drift * 0.32} y={760} scale={0.56} opacity={0.22} />
       </g>
-      <path d="M0 1370 Q270 1240 520 1360 T1080 1320 V1920 H0Z" fill="#203b35" />
-      <path d="M0 1510 Q250 1380 500 1480 T1080 1450 V1920 H0Z" fill="url(#ground)" />
-      <g opacity="0.95">
-        {Array.from({length: 13}, (_, i) => (
-          <Pine key={i} x={i * 100 - 30} y={sceneIndex % 2 ? 1420 : 1470} scale={0.42 + (i % 3) * 0.12} tint={i % 2 ? '#24483d' : '#315c4a'} />
-        ))}
-        <Pine x={75} y={1640} scale={1.1} tint="#315c4a" />
-        <Pine x={980} y={1650} scale={1.2} tint="#294c43" />
-      </g>
-      <g opacity={sceneIndex >= 3 ? 0.95 : 0.5}>
-        <House x={300} y={1500} scale={0.72} glow={glow} />
-        <House x={770} y={1475} scale={0.52} glow={glow} />
-      </g>
-      {sceneIndex >= 2 && (
-        <g transform={`translate(540 1120) scale(${0.9 + Math.sin(frame / 90) * 0.025})`}>
-          <ellipse cx="0" cy="0" rx="210" ry="330" fill={light} opacity="0.1" filter="url(#softGlow)" />
-          <path d="M-115 170 V-120 Q-115 -260 0 -260 Q115 -260 115 -120 V170" fill="none" stroke={light} strokeWidth="16" opacity="0.74" />
-          <path d="M-91 170 V-116 Q-91 -230 0 -230 Q91 -230 91 -116 V170" fill="none" stroke="#fff1d1" strokeWidth="3" opacity="0.52" />
-          <path d="M-92 170 Q0 110 92 170" fill="none" stroke={light} strokeWidth="6" opacity="0.45" />
+
+      {sceneIndex === 0 && (
+        <g>
+          <path d="M0 1040 L180 790 L330 960 L505 720 L720 985 L890 790 L1080 980 V1920 H0Z" fill="#263c4b" opacity="0.7" />
+          <path d="M0 1280 Q180 1140 360 1250 T720 1210 T1080 1240 V1920 H0Z" fill="#203b35" />
+          <path d="M0 1510 Q250 1380 500 1480 T1080 1450 V1920 H0Z" fill="url(#ground)" />
+          {Array.from({length: 13}, (_, i) => <Pine key={i} x={i * 100 - 30} y={1470} scale={0.42 + (i % 3) * 0.12} tint={i % 2 ? '#24483d' : '#315c4a'} />)}
+          <Pine x={75} y={1640} scale={1.1} tint="#315c4a" />
+          <Pine x={980} y={1650} scale={1.2} tint="#294c43" />
+          <House x={300} y={1500} scale={0.72} glow={glow} />
+          <House x={770} y={1475} scale={0.52} glow={glow} />
+          <Traveler x={540} y={1580} scale={1.18} frame={frame} />
         </g>
       )}
-      <g opacity={sceneIndex >= 4 ? 0.94 : 0.72}>
-        <Traveler x={540} y={1580} scale={1.18} frame={frame} />
-      </g>
+
+      {sceneIndex === 1 && (
+        <g>
+          <path d="M0 1120 L170 900 L310 1050 L470 790 L650 1040 L820 850 L1080 1090 V1920 H0Z" fill="#34495c" opacity="0.56" />
+          <path d="M-80 1370 Q210 1230 420 1320 L530 1450 L330 1530 L-80 1490Z" fill="#52746e" />
+          <path d="M530 1450 L680 1280 Q870 1200 1160 1370 L1160 1510 L770 1550Z" fill="#3d6a68" />
+          <path d="M80 1450 L280 1500 L220 1630 L25 1570Z M700 1400 L930 1460 L880 1600 L660 1530Z" fill="#152b36" />
+          <path d="M350 1430 Q530 1300 710 1420 L820 1510 L300 1510Z" fill="#b6a17b" />
+          <path d="M300 1510 L820 1510 L760 1580 L350 1580Z" fill="#4a514e" />
+          <path d="M420 1450 L540 1310 L660 1450" fill="none" stroke="#e5d0a7" strokeWidth="18" opacity="0.8" />
+          <g fill="#9bd8d4" opacity="0.8">
+            <path d="M185 1300 L230 1170 L275 1300Z" />
+            <path d="M850 1190 L900 1030 L950 1190Z" />
+            <path d="M720 1290 L755 1180 L790 1290Z" />
+          </g>
+          <g fill="#d8e9e3" opacity="0.42">
+            <path d="M0 1700 Q250 1630 500 1700 T1080 1670 V1920 H0Z" />
+            <path d="M0 1780 Q250 1710 500 1780 T1080 1750" fill="none" stroke="#b7ded7" strokeWidth="8" />
+          </g>
+          <Traveler x={730} y={1435} scale={0.94} frame={frame} />
+        </g>
+      )}
+
+      {sceneIndex === 2 && (
+        <g>
+          <path d="M0 1360 L0 950 L160 770 L250 1020 L370 690 L500 1000 L650 720 L790 1010 L930 760 L1080 990 V1920 H0Z" fill="#263c4b" />
+          <path d="M0 1440 L120 1130 L250 1240 L380 930 L540 1270 L690 980 L840 1270 L970 1080 L1080 1240 V1920 H0Z" fill="#405361" opacity="0.82" />
+          <path d="M0 1530 Q240 1410 520 1510 T1080 1490 V1920 H0Z" fill="#182d36" />
+          <g fill="#6b7475" stroke="#a5a9a1" strokeWidth="8">
+            <path d="M270 1560 V1040 H355 V1560Z" />
+            <path d="M725 1560 V1040 H810 V1560Z" />
+            <path d="M235 1060 L310 950 L390 1060Z" />
+            <path d="M690 1060 L765 950 L845 1060Z" />
+            <path d="M310 970 Q540 690 770 970" fill="none" strokeWidth="42" />
+          </g>
+          <path d="M350 1500 Q540 1410 730 1500" fill="none" stroke="#d5c29c" strokeWidth="18" opacity="0.55" />
+          <g fill="#d9c7a3" opacity="0.6">
+            <path d="M140 1500 L185 1320 L230 1500Z" />
+            <path d="M870 1500 L915 1290 L960 1500Z" />
+          </g>
+          <Traveler x={540} y={1510} scale={1.02} frame={frame} />
+        </g>
+      )}
+
+      {sceneIndex === 3 && (
+        <g>
+          <path d="M0 1050 L230 900 L360 1080 L360 1920 H0Z" fill="#293c45" />
+          <path d="M1080 1020 L850 850 L730 1100 L730 1920 H1080Z" fill="#354b51" />
+          <path d="M0 1550 L280 1390 L410 1530 L410 1920 H0Z" fill="#3d514b" />
+          <path d="M1080 1510 L820 1370 L690 1520 L690 1920 H1080Z" fill="#405b51" />
+          <path d="M300 1410 L780 1410 L670 1530 L410 1530Z" fill="#a48c6b" />
+          <path d="M410 1530 L670 1530 L735 1600 L350 1600Z" fill="#51463e" />
+          {Array.from({length: 9}, (_, i) => <path key={i} d={'M' + (390 + i * 35) + ' 1510 v72'} stroke="#d7c09b" strokeWidth="8" opacity="0.55" />)}
+          <path d="M0 1690 Q260 1580 500 1690 T1080 1660 V1920 H0Z" fill="#173b48" />
+          <path d={'M0 ' + (1740 + Math.sin(frame / 18) * 12) + ' Q270 1660 540 1750 T1080 1710'} fill="none" stroke="#80c2c4" strokeWidth="14" opacity="0.52" />
+          <path d="M130 1300 Q180 1450 140 1660 M950 1250 Q900 1440 940 1660" stroke="#a9c5b9" strokeWidth="18" fill="none" opacity="0.25" />
+          <Traveler x={540} y={1480} scale={1.08} frame={frame} />
+        </g>
+      )}
+
+      {sceneIndex === 4 && (
+        <g>
+          <path d="M0 1270 Q270 1160 540 1280 T1080 1240 V1920 H0Z" fill="#253c46" />
+          <path d="M0 1450 Q260 1380 540 1450 T1080 1420 V1920 H0Z" fill="#1e4a55" />
+          <path d="M0 1510 Q250 1460 500 1520 T1080 1480" fill="none" stroke="#8fc2bd" strokeWidth="10" opacity="0.5" />
+          <path d="M0 1650 Q250 1580 500 1650 T1080 1620" fill="none" stroke="#b5d7cb" strokeWidth="5" opacity="0.28" />
+          <g opacity="0.85">
+            <House x={250} y={1430} scale={0.78} glow={1} />
+            <House x={820} y={1395} scale={0.62} glow={0.9} />
+          </g>
+          <path d="M400 1570 L680 1570 L760 1620 L330 1620Z" fill="#7d6048" />
+          <path d="M430 1620 V1740 M650 1620 V1740" stroke="#604c3d" strokeWidth="16" />
+          <path d="M0 1270 Q150 1100 300 1300" stroke="#1f473b" strokeWidth="34" fill="none" />
+          <path d="M170 1300 Q150 1110 240 1010 M170 1190 Q70 1110 55 1000 M180 1160 Q300 1090 330 980" stroke="#315d4c" strokeWidth="30" fill="none" />
+          <Traveler x={540} y={1540} scale={1.02} frame={frame} />
+        </g>
+      )}
+
+      {sceneIndex === 5 && (
+        <g>
+          <path d="M0 1120 L240 900 L410 1120 V1920 H0Z" fill="#233e42" />
+          <path d="M1080 1110 L850 850 L680 1120 V1920 H1080Z" fill="#4a4050" />
+          <path d="M0 1450 Q250 1300 520 1450 V1920 H0Z" fill="#244d43" />
+          <path d="M1080 1430 Q820 1280 560 1450 V1920 H1080Z" fill="#51465a" />
+          <g fill="#315d4c">
+            <path d="M90 1460 L145 1210 L200 1460Z M210 1480 L270 1190 L330 1480Z M360 1490 L405 1290 L450 1490Z" />
+          </g>
+          <g fill="#9a87bd" opacity="0.8">
+            <path d="M700 1450 L760 1120 L820 1450Z M840 1450 L900 1040 L960 1450Z" />
+            <path d="M720 1450 L760 1260 L800 1450Z M860 1450 L900 1180 L940 1450Z" fill="#d5c8ef" opacity="0.6" />
+          </g>
+          <g transform={'translate(540 1250) scale(' + (1 + Math.sin(frame / 70) * 0.025) + ')'}>
+            <ellipse cx="0" cy="0" rx="250" ry="360" fill={light} opacity="0.2" filter="url(#softGlow)" />
+            <path d="M-150 190 V-125 Q-150 -300 0 -300 Q150 -300 150 -125 V190" fill="none" stroke={light} strokeWidth="22" />
+            <path d="M-118 190 V-120 Q-118 -260 0 -260 Q118 -260 118 -120 V190" fill="none" stroke="#fff4db" strokeWidth="4" opacity="0.7" />
+            <path d="M-118 190 Q0 120 118 190" fill="none" stroke={light} strokeWidth="9" />
+          </g>
+          <Traveler x={540} y={1660} scale={0.88} frame={frame} />
+        </g>
+      )}
+
+      {sceneIndex === 6 && (
+        <g>
+          <path d="M0 1180 L150 970 L270 1150 L400 850 L560 1130 L700 860 L860 1120 L1010 920 L1080 1050 V1920 H0Z" fill="#26384a" />
+          <path d="M120 1470 V1080 L250 930 L380 1080 V1470Z M700 1470 V1080 L830 930 L960 1080 V1470Z" fill="#4b4b5c" stroke="#9b8b86" strokeWidth="10" />
+          <path d="M90 1090 L250 850 L410 1090Z M670 1090 L830 850 L990 1090Z" fill="#5b5966" />
+          <path d="M400 1480 V1170 Q540 1000 680 1170 V1480Z" fill="#111a29" stroke="#d7b98e" strokeWidth="18" />
+          <path d="M440 1480 V1200 Q540 1080 640 1200 V1480" fill="none" stroke={light} strokeWidth="8" opacity="0.9" />
+          <path d="M0 1540 L1080 1540 L900 1670 L180 1670Z" fill="#655a59" />
+          {Array.from({length: 7}, (_, i) => <path key={i} d={'M' + (180 + i * 120) + ' 1670 l-35 250 h70 l-35 -250'} fill="#8a7771" opacity="0.7" />)}
+          <g fill="#d5b78e">
+            <path d="M210 1080 L270 930 L330 1080Z M750 1080 L810 930 L870 1080Z" />
+            <path d="M250 980 V830 M810 980 V830" stroke="#d5b78e" strokeWidth="12" />
+          </g>
+          <Traveler x={540} y={1540} scale={0.92} frame={frame} />
+        </g>
+      )}
+
+      {sceneIndex === 7 && (
+        <g>
+          <path d="M0 1220 L150 1040 L280 1220 L400 940 L540 1150 L680 930 L820 1200 L970 1020 L1080 1160 V1920 H0Z" fill="#202f42" />
+          <path d="M120 1510 V1170 L260 1000 L400 1170 V1510Z M680 1510 V1170 L820 1000 L960 1170 V1510Z" fill="#394456" />
+          <path d="M80 1190 L260 900 L440 1190Z M640 1190 L820 900 L1000 1190Z" fill="#4d5262" />
+          <path d="M350 1510 V1260 Q540 1030 730 1260 V1510Z" fill="#111a29" stroke={light} strokeWidth="18" opacity="0.95" />
+          <path d="M0 1610 Q540 1470 1080 1610 V1920 H0Z" fill="#111d2a" />
+          <path d="M540 1500 L0 1800 M540 1500 L1080 1800" stroke={light} strokeWidth="7" opacity="0.16" />
+          <g fill="#d9c6a5" opacity="0.75">
+            <path d="M180 1620 L300 1620 L360 1920 H120Z" />
+            <path d="M780 1620 L900 1620 L960 1920 H720Z" />
+          </g>
+        </g>
+      )}
+
       <g opacity="0.45">
         {Array.from({length: 24}, (_, i) => {
           const x = (i * 137 + 60) % 1080;
@@ -140,12 +260,6 @@ const Landscape: React.FC<{frame: number; sceneIndex: number; light: string}> = 
           const twinkle = 0.3 + 0.7 * Math.abs(Math.sin(frame / 18 + i));
           return <circle key={i} cx={x} cy={y} r={1.5 + (i % 3)} fill="#fff4d7" opacity={twinkle} />;
         })}
-      </g>
-      <g opacity="0.65">
-        <Block x={120} y={1760} s={72} color="#446454" />
-        <Block x={850} y={1800} s={90} color="#345545" />
-        <Block x={920} y={1700} s={54} color="#4a705a" />
-        <Block x={40} y={1680} s={50} color="#395b4c" />
       </g>
     </svg>
   );
@@ -169,13 +283,13 @@ export const ImperialSolTeaser: React.FC = () => {
   return (
     <>
       <Audio src={staticFile('audio/music-bed.wav')} volume={music} />
-      <Audio src={staticFile('audio/whoosh.wav')} from={240} volume={0.12} />
-      <Audio src={staticFile('audio/soft-chime.wav')} from={790} volume={0.1} />
-      <Audio src={staticFile('audio/soft-impact.wav')} from={1320} volume={0.14} />
-      <Audio src={staticFile('audio/whoosh.wav')} from={1740} volume={0.16} />
+      <Audio src={staticFile('audio/whoosh.wav')} from={IMPERIAL_SOL_SCENE_STARTS[1]} volume={0.1} />
+      <Audio src={staticFile('audio/soft-chime.wav')} from={IMPERIAL_SOL_SCENE_STARTS[3]} volume={0.08} />
+      <Audio src={staticFile('audio/soft-impact.wav')} from={IMPERIAL_SOL_SCENE_STARTS[6]} volume={0.1} />
+      <Audio src={staticFile('audio/whoosh.wav')} from={IMPERIAL_SOL_SCENE_STARTS[7]} volume={0.12} />
       <Audio src={staticFile('audio/imperial-sol-narration.mp3')} volume={1} />
       <AbsoluteFill style={{backgroundColor: '#101b2b', color: '#fff8ed', overflow: 'hidden', fontFamily: 'Georgia, serif'}}>
-        <AbsoluteFill style={{background: 'linear-gradient(180deg, #101b2b 0%, #263849 54%, #0b171e 100%)'}} />
+        <AbsoluteFill style={{background: `linear-gradient(180deg, ${scene.sky} 0%, #263849 54%, #0b171e 100%)`}} />
         <div style={{position: 'absolute', inset: 0, transform: `scale(${camera}) translate3d(${interpolate(frame, [0, IMPERIAL_SOL_DURATION_FRAMES], [0, -110], clamp)}px, ${Math.sin(frame / 100) * 10}px, 0)`, transformOrigin: '50% 58%'}}>
           {sceneIndex > 0 && (
             <div style={{position: 'absolute', inset: 0, opacity: 1 - transitionProgress}}>
