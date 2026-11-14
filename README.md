@@ -5,7 +5,7 @@ A reusable, multi-project video production workspace powered by [Remotion](https
 ## Included projects
 
 - **TunasKecil** — the original 90-second vertical sample about a small team growing through collaboration.
-- **TunasDewa** — an 90-second cinematic sequel about a seed growing into a monumental tree, with eight skills, setbacks, recovery, transformation, Indonesian narration, music, and sound effects.
+- **TunasDewa** — a 90-second cinematic story about a seed growing into a monumental tree, with eight skills, setbacks, recovery, transformation, natural Indonesian neural narration, music, and sound effects.
 
 Both projects are separate Remotion compositions registered in `src/projects/registry.ts`. TunasKecil remains intact.
 
@@ -43,17 +43,29 @@ npm run render:tunas
 
 Output: `out/tunas-kecil.mp4`.
 
-## Render Tunas Dewa with narration
+## Render Tunas Dewa with natural narration
 
-Install eSpeak NG first, and make sure the `espeak-ng` command is available in your terminal. The renderer uses its Indonesian voice to synthesize the narration WAV locally.
+The narration uses the online Microsoft Edge neural speech service through the open-source `edge-tts` Python package. It uses the Indonesian male voice `id-ID-ArdiNeural` by default. Internet access is required when generating the voice; the resulting MP3 is then bundled into the rendered MP4.
+
+Create a Python virtual environment and install the TTS dependency:
+
+```bash
+python -m venv .venv-tts
+# macOS / Linux
+.venv-tts/bin/python -m pip install edge-tts==7.3.1
+# Windows PowerShell
+.venv-tts\\Scripts\\python -m pip install edge-tts==7.3.1
+```
+
+Then render:
 
 ```bash
 npm run render:tunas-dewa
 ```
 
-Output: `out/tunas-dewa.mp4`.
+Output: `out/tunas-dewa.mp4`. The narration voice, speaking rate, and pitch can be changed with `TTS_VOICE`, `TTS_RATE`, and `TTS_PITCH`. Supported Indonesian neural voice names should be checked against Microsoft's current voice catalogue before changing the preset. The current workflow uses `id-ID-ArdiNeural` with a slightly slower rate and subtly lower pitch.
 
-**Voice quality note:** the included Indonesian narration is generated with eSpeak NG, an offline speech synthesizer. It is a real spoken audio track, but it has a noticeably synthetic/computer-generated timbre rather than a natural studio voice. The narration WAV can be replaced with a recording or a separately licensed TTS voice without changing the video composition.
+**Important:** this uses an online neural TTS service via an unofficial community client, not a locally installed human voice recording. Service availability or behavior may change. If synthesis fails, the build stops rather than silently reverting to the robotic eSpeak voice.
 
 ## Render on GitHub
 
@@ -62,7 +74,7 @@ The **Render video** workflow supports both:
 - **Automatic rendering:** pushes to `main` that change files under `.github/workflows/`, `src/`, `scripts/`, `public/`, or `package.json`. The default render is now **TunasDewa**.
 - **Manual rendering:** open **Actions → Render video → Run workflow**, then enter a registered composition ID and an MP4 filename. Available IDs: `TunasKecil` and `TunasDewa`.
 
-The workflow installs eSpeak NG, runs TypeScript validation and unit tests, generates music/SFX and Indonesian narration, renders MP4, and uploads the artifact. After a successful run, download the MP4 from that run's **Artifacts** section.
+The workflow installs the neural TTS dependency, runs TypeScript validation and unit tests, generates music/SFX and Indonesian neural narration, renders MP4, and uploads the artifact. After a successful run, download the MP4 from that run's **Artifacts** section.
 
 ## Add another video project
 
@@ -80,7 +92,7 @@ The shared registry is project-agnostic; neither TunasKecil nor TunasDewa is har
 
 ## Dialogue voice library
 
-The reusable voice library lives in `src/voice/`. It contains voice-profile metadata and a playback component for prepared recordings. The Tunas Dewa composition uses a separate generated narration WAV so that its narration can be replaced independently.
+The reusable voice library lives in `src/voice/`. It contains voice-profile metadata and a playback component for prepared recordings. The Tunas Dewa composition uses a separate generated narration MP3 so that its narration can be replaced independently.
 
 ## Verification status
 
