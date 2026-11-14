@@ -3,6 +3,8 @@ import {ImperialSolTeaser} from '../ImperialSolTeaser';
 import {IMPERIAL_SOL_DURATION_FRAMES} from '../generated/imperial-sol-timing';
 import {TunasDewa} from '../TunasDewa';
 import {TunasKecil} from '../TunasKecil';
+import {TrigonometriPraktik} from '../TrigonometriPraktik';
+import {TRIGONOMETRI_DURATION_FRAMES} from '../generated/trigonometri-timing';
 
 export type VideoProjectDefinition = {
   id: string;
@@ -30,6 +32,14 @@ export const VIDEO_PROJECTS: VideoProjectDefinition[] = [
     id: 'TunasDewa',
     component: TunasDewa,
     durationInFrames: 2700,
+    fps: 30,
+    width: 1080,
+    height: 1920,
+  },
+  {
+    id: 'TrigonometriPraktik',
+    component: TrigonometriPraktik,
+    durationInFrames: TRIGONOMETRI_DURATION_FRAMES,
     fps: 30,
     width: 1080,
     height: 1920,
