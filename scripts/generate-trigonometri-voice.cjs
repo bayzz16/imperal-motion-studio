@@ -3,7 +3,8 @@ const path=require('node:path');
 const {spawnSync}=require('node:child_process');
 const ts=require('typescript');
 
-// Indonesian neural TTS currently exposes two standard id-ID identities; per-character rate and pitch create six distinguishable role profiles.\nconst dialogue=[
+// Indonesian neural TTS currently exposes two standard id-ID identities; per-character rate and pitch create six distinguishable role profiles.
+const dialogue=[
  {speaker:'Filza',scene:'opening',text:'Halo semuanya! Kami dari kelompok kelas sepuluh E dua.'},
  {speaker:'Falyn',scene:'opening',text:'Hari ini kami akan mempraktikkan teori trigonometri untuk memperkirakan tinggi tiang bendera.'},
  {speaker:'Taysa',scene:'opening',text:'Kita akan mencari tingginya tanpa mengukur tiang dari bawah sampai ke puncak.'},
