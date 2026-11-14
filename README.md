@@ -17,6 +17,9 @@ All projects are separate Remotion compositions registered in `src/projects/regi
 - Reusable sequential scene-timeline planning and a Remotion `SceneSequence` adapter.
 - Automated scene-timeline unit tests.
 - Deterministic camera movement and reusable frame-driven motion/orbit mathematics in `src/motion/`.
+- Reusable spring response, cubic-bezier easing, range mapping, and damped oscillation primitives in `src/motion/physics.ts`.
+- Camera movement regression tests covering all presets, deterministic output, frame clamping, and invalid inputs.
+- Motion-physics tests covering spring overshoot, easing endpoints, range mapping, damping, and invalid parameters.
 - Reusable animated celestial-body visuals (axial rotation, surface shading, atmosphere, clouds, and ring layers) in `src/visual/`.
 - Motion regression tests plus MP4 validation for video/audio streams, duration, and dimensions.
 - GitHub Actions rendering to MP4, with downloadable artifacts retained for 14 days.
@@ -36,6 +39,7 @@ npm run studio
 npm run typecheck
 npm test
 npm run compositions
+npm run validate:render
 ```
 
 ## Render Tunas Kecil
@@ -110,7 +114,7 @@ The shared registry is project-agnostic; each composition remains independently 
 
 ## Build a sequential scene timeline
 
-`buildSceneTimeline` validates scene IDs and frame durations, then calculates each scene's start and exclusive end frame. `SceneSequence` maps an individual placement to Remotion's `Sequence` component. The planner handles sequential placement and gaps; it does not yet implement overlapping layers or transitions.
+`buildSceneTimeline` validates scene IDs and frame durations, then calculates each scene's start and exclusive end frame. `SceneSequence` maps an individual placement to Remotion's `Sequence` component. The planner handles sequential placement and gaps; it does not yet implement overlapping layers or transitions. Frame-based spring and easing helpers can drive independent visual layers without coupling the timeline planner to a specific visual style.
 
 ## Dialogue voice library
 
