@@ -189,7 +189,7 @@ export const TunasDewa: React.FC = () => {
   const orbOpacity = sceneIndex === 2
     ? interpolate(localFrame, [0, 25, 300, 337], [0, 1, 1, 0], {extrapolateRight: 'clamp'})
     : 0;
-  const musicVolume = interpolate(frame, [0, 60, 1900, 2200, 2699], [0.08, 0.13, 0.16, 0.22, 0.12], {
+  const musicVolume = interpolate(frame, [0, 60, 1900, 2200, 2699], [0.055, 0.07, 0.085, 0.1, 0.065], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
@@ -198,15 +198,15 @@ export const TunasDewa: React.FC = () => {
   return (
     <>
       <Audio src={staticFile('audio/music-bed.wav')} volume={musicVolume} />
-      <Audio src={staticFile('audio/soft-chime.wav')} from={0} volume={0.2} />
-      <Audio src={staticFile('audio/seedling.wav')} from={280} volume={0.22} />
-      <Audio src={staticFile('audio/whoosh.wav')} from={660} volume={0.18} />
+      <Audio src={staticFile('audio/soft-chime.wav')} from={0} volume={0.14} />
+      <Audio src={staticFile('audio/seedling.wav')} from={280} volume={0.15} />
+      <Audio src={staticFile('audio/whoosh.wav')} from={660} volume={0.13} />
       <Audio src={staticFile('audio/soft-impact.wav')} from={1010} volume={0.2} />
       <Audio src={staticFile('audio/whoosh.wav')} from={1350} volume={0.22} />
-      <Audio src={staticFile('audio/seedling.wav')} from={1810} volume={0.24} />
-      <Audio src={staticFile('audio/soft-chime.wav')} from={2250} volume={0.25} />
+      <Audio src={staticFile('audio/seedling.wav')} from={1810} volume={0.16} />
+      <Audio src={staticFile('audio/soft-chime.wav')} from={2250} volume={0.16} />
       <Audio src={staticFile('audio/whoosh.wav')} from={2490} volume={0.25} />
-      <Audio src={staticFile('audio/tunas-dewa-narration.wav')} volume={narrationVolume} />
+      <Audio src={staticFile('audio/tunas-dewa-narration.mp3')} volume={narrationVolume} />
       <AbsoluteFill
         style={{
           background: `radial-gradient(ellipse at 50% 54%, ${scene.sky} 0%, #08171f 76%)`,
