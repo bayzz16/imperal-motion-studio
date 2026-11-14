@@ -5,7 +5,8 @@ A reusable, multi-project video production workspace powered by [Remotion](https
 ## Included projects
 
 - **TunasKecil** — the original 90-second vertical sample about a small team growing through collaboration.
-- **TunasDewa** — a 90-second cinematic story about a seed growing into a monumental tree, with eight skills, setbacks, recovery, transformation, natural Indonesian neural narration, music, and sound effects.
+- **TunasDewa** — a 90-second cinematic metaphor about a seed growing into a monumental tree.
+- **TunasPohon** — a 90-second botanical animation following a generic broadleaf tree from seed germination to mature tree, with roots, trunk, branches, foliage, weather, and Indonesian neural narration.
 - **ImperialSolTeaser** — a 72-second vertical Minecraft-inspired cinematic teaser for Imperial × Slice of Life. It deliberately avoids revealing unreleased server features.
 
 All projects are separate Remotion compositions registered in `src/projects/registry.ts`. Existing projects remain independent.
@@ -125,9 +126,9 @@ Output: `out/tunas-dewa.mp4`. The narration voice, speaking rate, and pitch can 
 The **Render video** workflow supports both:
 
 - **Automatic rendering:** pushes to `main` that change files under `.github/workflows/`, `src/`, `scripts/`, `public/`, or `package.json`. The default render is **TunasDewa**.
-- **Manual rendering:** open **Actions → Render video → Run workflow**, then enter a registered composition ID and an MP4 filename. Available IDs: `TunasKecil`, `TunasDewa`, and `ImperialSolTeaser`.
+- **Manual rendering:** open **Actions → Render video → Run workflow**, then enter a registered composition ID and an MP4 filename. Available IDs: `TunasKecil`, `TunasDewa`, `TunasPohon`, `TrigonometriPraktik`, `KyandraRoast`, `GalaxyEducation`, and `ImperialSolTeaser`.
 
-For the new teaser, use composition ID `ImperialSolTeaser` and filename `imperial-sol-teaser.mp4`. The workflow generates the narration that matches the selected composition, renders the MP4, and uploads it as an artifact. After a successful run, download the MP4 from that run's **Artifacts** section.
+For the botanical growth test, use composition ID `TunasPohon` and filename `tunas-pohon.mp4`. For the new teaser, use composition ID `ImperialSolTeaser` and filename `imperial-sol-teaser.mp4`. The workflow generates the narration that matches the selected composition, renders the MP4, and uploads it as an artifact. After a successful run, download the MP4 from that run's **Artifacts** section.
 
 ## Add another video project
 
