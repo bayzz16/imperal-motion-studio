@@ -7,6 +7,8 @@ import {TrigonometriPraktik} from '../TrigonometriPraktik';
 import {TRIGONOMETRI_DURATION_FRAMES} from '../generated/trigonometri-timing';
 import {KyandraRoast} from '../KyandraRoast';
 import {KYANDRA_DURATION_FRAMES} from '../generated/kyandra-timing';
+import {GalaxyEducation} from '../GalaxyEducation';
+import {GALAXY_DURATION_FRAMES} from '../generated/galaxy-timing';
 
 export type VideoProjectDefinition = {
   id: string;
