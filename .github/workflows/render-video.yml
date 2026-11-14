@@ -106,13 +106,16 @@ jobs:
             node scripts/generate-kyandra-voice.cjs
           fi
 
+      - name: Resolve adaptive cinematic render profile
+        run: node scripts/render-profile.cjs --github-env
+
       - name: Render MP4
         env:
           COMPOSITION_ID: ${{ inputs.composition_id || (contains(github.event.head_commit.message, '[render:galaxy]') && 'GalaxyEducation') || (contains(github.event.head_commit.message, '[render:kyandra]') && 'KyandraRoast') || (contains(github.event.head_commit.message, '[render:trigonometri]') && 'TrigonometriPraktik') || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'ImperialSolTeaser') || 'TunasDewa' }}
           OUTPUT_FILENAME: ${{ inputs.output_filename || (contains(github.event.head_commit.message, '[render:galaxy]') && 'tata-surya-bima-sakti.mp4') || (contains(github.event.head_commit.message, '[render:kyandra]') && 'kyandra-roast.mp4') || (contains(github.event.head_commit.message, '[render:trigonometri]') && 'praktik-trigonometri.mp4') || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'imperial-sol-teaser.mp4') || 'tunas-dewa.mp4' }}
         run: |
           mkdir -p out
-          npx remotion render src/index.tsx "$COMPOSITION_ID" "out/$OUTPUT_FILENAME" --concurrency=2 --log=verbose
+          npx remotion render src/index.tsx "$COMPOSITION_ID" "out/$OUTPUT_FILENAME" --concurrency="$RENDER_CONCURRENCY" --scale="$RENDER_SCALE" --jpeg-quality="$RENDER_JPEG_QUALITY" --crf="$RENDER_CRF" --log=verbose
 
       - name: Validate rendered MP4 streams and metadata
         env:
