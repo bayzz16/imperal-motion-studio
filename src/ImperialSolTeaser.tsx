@@ -157,9 +157,9 @@ export const ImperialSolTeaser: React.FC = () => {
   const sceneStart = IMPERIAL_SOL_SCENE_STARTS[sceneIndex];
   const nextSceneStart = IMPERIAL_SOL_SCENE_STARTS[sceneIndex + 1] ?? IMPERIAL_SOL_DURATION_FRAMES;
   const local = frame - sceneStart;
-  const sceneLength = Math.max(1, nextSceneStart - sceneStart);
   const scene = SCENES[sceneIndex];
   const fade = interpolate(local, [0, 22], [0, 1], {...clamp, easing: Easing.out(Easing.quad)});
+  const transitionProgress = sceneIndex === 0 ? 1 : interpolate(local, [0, 30], [0, 1], clamp);
   const titleIn = interpolate(local, [18, 58], [36, 0], { ...clamp, easing: Easing.out(Easing.cubic) });
   const camera = interpolate(frame, [0, IMPERIAL_SOL_DURATION_FRAMES], [1.035, 1.19], clamp);
   const reveal = interpolate(local, [0, 42], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
@@ -175,8 +175,15 @@ export const ImperialSolTeaser: React.FC = () => {
       <Audio src={staticFile('audio/imperial-sol-narration.mp3')} volume={1} />
       <AbsoluteFill style={{backgroundColor: '#101b2b', color: '#fff8ed', overflow: 'hidden', fontFamily: 'Georgia, serif'}}>
         <AbsoluteFill style={{background: 'linear-gradient(180deg, #101b2b 0%, #263849 54%, #0b171e 100%)'}} />
-        <div style={{position: 'absolute', inset: 0, transform: `scale(${camera}) translate3d(${interpolate(frame, [0, IMPERIAL_SOL_DURATION_FRAMES], [0, -72], clamp)}px, ${Math.sin(frame / 100) * 10}px, 0)`, transformOrigin: '50% 58%'}}>
-          <Landscape frame={frame} sceneIndex={sceneIndex} light={scene.light} />
+        <div style={{position: 'absolute', inset: 0, transform: `scale(${camera}) translate3d(${interpolate(frame, [0, IMPERIAL_SOL_DURATION_FRAMES], [0, -110], clamp)}px, ${Math.sin(frame / 100) * 10}px, 0)`, transformOrigin: '50% 58%'}}>
+          {sceneIndex > 0 && (
+            <div style={{position: 'absolute', inset: 0, opacity: 1 - transitionProgress}}>
+              <Landscape frame={frame} sceneIndex={sceneIndex - 1} light={SCENES[sceneIndex - 1].light} />
+            </div>
+          )}
+          <div style={{position: 'absolute', inset: 0, opacity: transitionProgress}}>
+            <Landscape frame={frame} sceneIndex={sceneIndex} light={scene.light} />
+          </div>
         </div>
         <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(5,12,22,.48) 0%, transparent 34%, transparent 60%, rgba(3,10,16,.68) 100%)'}} />
         <div style={{position: 'absolute', top: 88, left: 72, right: 72, display: 'flex', justifyContent: 'space-between', fontFamily: 'Arial, sans-serif', fontSize: 17, letterSpacing: 5, color: 'rgba(255,248,237,.7)'}}>
