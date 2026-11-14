@@ -201,11 +201,11 @@ export const TunasDewa: React.FC = () => {
       <Audio src={staticFile('audio/soft-chime.wav')} from={0} volume={0.14} />
       <Audio src={staticFile('audio/seedling.wav')} from={280} volume={0.15} />
       <Audio src={staticFile('audio/whoosh.wav')} from={660} volume={0.13} />
-      <Audio src={staticFile('audio/soft-impact.wav')} from={1010} volume={0.2} />
-      <Audio src={staticFile('audio/whoosh.wav')} from={1350} volume={0.22} />
+      <Audio src={staticFile('audio/soft-impact.wav')} from={1010} volume={0.14} />
+      <Audio src={staticFile('audio/whoosh.wav')} from={1350} volume={0.15} />
       <Audio src={staticFile('audio/seedling.wav')} from={1810} volume={0.16} />
       <Audio src={staticFile('audio/soft-chime.wav')} from={2250} volume={0.16} />
-      <Audio src={staticFile('audio/whoosh.wav')} from={2490} volume={0.25} />
+      <Audio src={staticFile('audio/whoosh.wav')} from={2490} volume={0.16} />
       <Audio src={staticFile('audio/tunas-dewa-narration.mp3')} volume={narrationVolume} />
       <AbsoluteFill
         style={{
