@@ -1,5 +1,6 @@
 import type React from 'react';
 import {ImperialSolTeaser} from '../ImperialSolTeaser';
+import {IMPERIAL_SOL_DURATION_FRAMES} from '../generated/imperial-sol-timing';
 import {TunasDewa} from '../TunasDewa';
 import {TunasKecil} from '../TunasKecil';
 
@@ -36,7 +37,7 @@ export const VIDEO_PROJECTS: VideoProjectDefinition[] = [
   {
     id: 'ImperialSolTeaser',
     component: ImperialSolTeaser,
-    durationInFrames: 2160,
+    durationInFrames: IMPERIAL_SOL_DURATION_FRAMES,
     fps: 30,
     width: 1080,
     height: 1920,
