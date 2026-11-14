@@ -8,7 +8,6 @@ import {
   useCurrentFrame,
 } from 'remotion';
 
-const FPS = 30;
 const SCENE_FRAMES = 270;
 const SCENES = [
   {tag: 'SEBUAH DUNIA BARU', title: 'Ada dunia yang belum\nmengenal namamu.', sub: 'Dan setiap kisah besar selalu dimulai dari satu langkah.', sky: '#111b2c', light: '#e8a66d'},
