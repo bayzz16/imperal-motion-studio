@@ -10,7 +10,7 @@ const narration = [
   'Imperial.',
   'Bersama Slice of Life.',
   'Dua dunia, satu cerita.',
-  'Imperial kali Slice of Life. Segera hadir.',
+  'Inilah Imperial dan Slice of Life. Segera hadir.',
 ].join('\n\n');
 
 const outputDirectory = path.join(process.cwd(), 'public', 'audio');
