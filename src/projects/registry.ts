@@ -5,6 +5,8 @@ import {TunasDewa} from '../TunasDewa';
 import {TunasKecil} from '../TunasKecil';
 import {TrigonometriPraktik} from '../TrigonometriPraktik';
 import {TRIGONOMETRI_DURATION_FRAMES} from '../generated/trigonometri-timing';
+import {KyandraRoast} from '../KyandraRoast';
+import {KYANDRA_DURATION_FRAMES} from '../generated/kyandra-timing';
 
 export type VideoProjectDefinition = {
   id: string;
@@ -40,6 +42,14 @@ export const VIDEO_PROJECTS: VideoProjectDefinition[] = [
     id: 'TrigonometriPraktik',
     component: TrigonometriPraktik,
     durationInFrames: TRIGONOMETRI_DURATION_FRAMES,
+    fps: 30,
+    width: 1080,
+    height: 1920,
+  },
+  {
+    id: 'KyandraRoast',
+    component: KyandraRoast,
+    durationInFrames: KYANDRA_DURATION_FRAMES,
     fps: 30,
     width: 1080,
     height: 1920,
