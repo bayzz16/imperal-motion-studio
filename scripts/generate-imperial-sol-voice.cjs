@@ -51,7 +51,7 @@ if (!Number.isFinite(totalDuration) || totalDuration < 15 || fs.statSync(outputP
   throw new Error('Final narration failed duration/size validation.');
 }
 const fps = 30;
-const leadInFrames = 18;
+const leadInFrames = 0;
 const gapFrames = Math.round(0.45 * fps);
 let cursor = leadInFrames;
 const starts = segmentDurations.map((duration, index) => {
