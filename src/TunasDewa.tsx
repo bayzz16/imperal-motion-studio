@@ -112,13 +112,41 @@ const Tree: React.FC<{growth: number; frame: number; accent: string}> = ({
         <path d="M-8 -80 C-115 -190 -180 -265 -260 -380 M20 -120 C125 -235 190 -305 285 -405 M-5 -320 C-95 -400 -130 -470 -170 -545 M24 -355 C105 -430 145 -495 185 -560" fill="none" stroke="#8e6849" strokeWidth="24" strokeLinecap="round" />
         <path d="M-5 -75 C-105 -185 -165 -260 -245 -365 M24 -125 C130 -235 195 -305 275 -390" fill="none" stroke="#c49a67" strokeWidth="5" opacity="0.7" />
         <g opacity={canopyOpacity} transform={`rotate(${sway})`}>
-          {leafPoints.map(([x, y, scale], index) => (
-            <g key={index} transform={`translate(${x} ${y}) scale(${scale})`}>
-              <circle r={72} fill={index % 3 === 0 ? '#4e8a63' : index % 3 === 1 ? '#78a96f' : '#9ac17b'} />
-              <circle cx="-18" cy="-20" r="28" fill="#d4e7a0" opacity="0.22" />
-            </g>
-          ))}
-          <circle cx="0" cy="-630" r="340" fill="none" stroke={accent} strokeWidth="3" opacity="0.14" />
+          {/* One connected canopy silhouette; layered foliage replaces disconnected bubble-like circles. */}
+          <path d="M-350 -405
+            C-390 -470 -350 -555 -280 -575
+            C-300 -665 -220 -730 -135 -700
+            C-105 -795 -5 -825 70 -765
+            C145 -815 245 -765 250 -675
+            C345 -660 385 -565 330 -495
+            C385 -420 345 -330 270 -305
+            C245 -220 145 -205 85 -250
+            C5 -195 -105 -220 -130 -285
+            C-235 -260 -325 -310 -315 -375
+            C-330 -380 -340 -390 -350 -405Z"
+            fill="#477c56" stroke="#294f3c" strokeWidth="13" strokeLinejoin="round"/>
+          <path d="M-300 -455 C-245 -535 -160 -560 -95 -520
+            C-40 -610 55 -630 120 -560 C190 -625 285 -560 285 -485
+            C330 -420 260 -345 185 -365 C120 -300 35 -335 -5 -385
+            C-85 -325 -190 -350 -205 -420 C-250 -400 -285 -420 -300 -455Z"
+            fill="#6f9e62" opacity="0.9"/>
+          <path d="M-250 -485 C-210 -590 -120 -625 -45 -565
+            M-115 -620 C-65 -700 15 -700 65 -630
+            M55 -600 C125 -685 225 -625 225 -550
+            M210 -510 C300 -490 320 -420 265 -380
+            M-270 -420 C-315 -360 -260 -300 -195 -330
+            M-145 -350 C-95 -285 -10 -285 35 -335
+            M55 -375 C115 -315 195 -315 235 -365"
+            fill="none" stroke="#a9c97c" strokeWidth="34" strokeLinecap="round" opacity="0.55"/>
+          <path d="M-275 -520 C-210 -560 -155 -550 -110 -500
+            M-80 -650 C-35 -675 5 -665 40 -625
+            M105 -620 C155 -650 205 -610 210 -570
+            M245 -475 C290 -450 290 -410 260 -390
+            M-215 -390 C-180 -355 -140 -355 -110 -385
+            M-30 -420 C10 -455 55 -450 85 -415
+            M115 -365 C155 -390 190 -385 215 -405"
+            fill="none" stroke="#d0df9a" strokeWidth="10" strokeLinecap="round" opacity="0.72"/>
+          <circle cx="0" cy="-630" r="340" fill="none" stroke={accent} strokeWidth="3" opacity="0.1" />
         </g>
       </g>
       <g opacity={reveal}>
