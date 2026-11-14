@@ -1,6 +1,6 @@
 import React from 'react';
 import {Audio} from '@remotion/media';
-import {AbsoluteFill, Easing, interpolate, Sequence, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Easing, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import {TRIGONOMETRI_DIALOGUE_CUES, TRIGONOMETRI_DURATION_FRAMES} from './generated/trigonometri-timing';
 
 type Speaker = 'Filza' | 'Falyn' | 'Taysa' | 'Rahma' | 'Miko' | 'Bayu';
@@ -117,7 +117,7 @@ export const TrigonometriPraktik: React.FC = () => {
   const music=interpolate(frame,[0,75,TRIGONOMETRI_DURATION_FRAMES-90,TRIGONOMETRI_DURATION_FRAMES],[0,.1,.1,0],clamp);
   return <>
     <Audio src={staticFile('audio/music-bed.wav')} volume={music}/>
-    {cues.map((cue)=><Sequence key={cue.file} from={cue.startFrame}><Audio src={staticFile(cue.file)} volume={1}/></Sequence>)}
+    <Audio src={staticFile('audio/trigonometri-narration.mp3')} volume={1}/>
     <AbsoluteFill style={{background:'#142b3a',color:'#fff8eb',fontFamily:'Arial,sans-serif',overflow:'hidden'}}>
       <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,#17384b,#34596a 55%,#172f3a)'}}/>
       <div style={{position:'absolute',top:35,left:70,right:70,display:'flex',justifyContent:'space-between',fontSize:17,letterSpacing:3,color:'#e3eee8',zIndex:5}}>
