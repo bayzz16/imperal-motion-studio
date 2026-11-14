@@ -79,12 +79,18 @@ jobs:
       - name: Generate original music and sound effects
         run: node scripts/generate-audio.cjs
 
-      - name: Generate natural Indonesian neural narration
+      - name: Generate composition-specific Indonesian neural narration
         env:
+          COMPOSITION_ID: ${{ inputs.composition_id || 'TunasDewa' }}
           TTS_VOICE: id-ID-ArdiNeural
           TTS_RATE: -4%
           TTS_PITCH: -2Hz
-        run: node scripts/generate-tunas-dewa-voice.cjs
+        run: |
+          if [ "$COMPOSITION_ID" = "ImperialSolTeaser" ]; then
+            node scripts/generate-imperial-sol-voice.cjs
+          elif [ "$COMPOSITION_ID" = "TunasDewa" ]; then
+            node scripts/generate-tunas-dewa-voice.cjs
+          fi
 
       - name: Render MP4
         env:
