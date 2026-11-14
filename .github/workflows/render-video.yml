@@ -2,7 +2,7 @@ name: Render video
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/three-dimensional-visual-engine]
     paths:
       - '.github/workflows/render-video.yml'
       - 'src/**'
