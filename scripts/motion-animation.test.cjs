@@ -1,0 +1,8 @@
+const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');const test=require('node:test');const ts=require('typescript');
+const p=path.join(__dirname,'..','src','motion','animation.ts');const src=fs.readFileSync(p,'utf8');const out=ts.transpileModule(src,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020},reportDiagnostics:true});assert.equal((out.diagnostics??[]).filter(d=>d.category===ts.DiagnosticCategory.Error).length,0);
+const m={exports:{}};new Function('exports','require','module','__filename','__dirname',out.outputText)(m.exports,require,m,p,path.dirname(p));const {clamp01,smoothstep,getProgress,getLoopAngle,getOrbitPosition,getOscillation}=m.exports;
+test('progress helpers clamp and ease',()=>{assert.equal(clamp01(-1),0);assert.equal(clamp01(2),1);assert.equal(smoothstep(0),0);assert.equal(smoothstep(1),1);assert.equal(getProgress(15,10,20),.5);});
+test('rotation loops without discontinuity',()=>{assert.equal(getLoopAngle(0,120),0);assert.equal(getLoopAngle(120,120),0);assert.equal(getLoopAngle(30,120),90);assert.equal(getLoopAngle(-30,120),270);});
+test('orbit repeats after a full period',()=>{const a=getOrbitPosition(0,240,100,50),b=getOrbitPosition(240,240,100,50);assert.ok(Math.abs(a.x-b.x)<1e-9);assert.ok(Math.abs(a.y-b.y)<1e-9);assert.ok(Math.abs(a.x)<1e-9);assert.equal(a.y,-50);});
+test('oscillation stays inside amplitude',()=>{for(let f=0;f<1000;f++)assert.ok(Math.abs(getOscillation(f,80,4))<=4);});
+test('invalid timing and radii are rejected',()=>{assert.throws(()=>getLoopAngle(0,0),/greater than zero/);assert.throws(()=>getProgress(1,4,4),/greater than startFrame/);assert.throws(()=>getOrbitPosition(0,10,-1,5),/cannot be negative/);});
