@@ -1,6 +1,5 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const os = require('node:os');
 const {spawnSync} = require('node:child_process');
 
 const narration = [
@@ -18,47 +17,58 @@ const narration = [
 ].join('\n\n');
 
 const outputDirectory = path.join(process.cwd(), 'public', 'audio');
-const outputPath = path.join(outputDirectory, 'tunas-dewa-narration.wav');
-const tempPath = path.join(os.tmpdir(), 'tunas-dewa-narration.txt');
+const outputPath = path.join(outputDirectory, 'tunas-dewa-narration.mp3');
+const tempPath = path.join(outputDirectory, '.tunas-dewa-narration.txt');
+const voice = process.env.TTS_VOICE || 'id-ID-ArdiNeural';
+const rate = process.env.TTS_RATE || '-4%';
+const pitch = process.env.TTS_PITCH || '-2Hz';
 
 fs.mkdirSync(outputDirectory, {recursive: true});
 fs.writeFileSync(tempPath, narration, 'utf8');
 
-const args = ['-v', 'id', '-s', '150', '-p', '30', '-a', '180', '-f', tempPath, '-w', outputPath];
-let engine = 'espeak-ng';
-let result = spawnSync(engine, args, {encoding: 'utf8'});
+const executable = process.env.EDGE_TTS_BIN || path.join(
+  process.cwd(),
+  '.venv-tts',
+  process.platform === 'win32' ? 'Scripts/edge-tts.exe' : 'bin/edge-tts',
+);
+const args = [
+  '--voice', voice,
+  `--rate=${rate}`,
+  `--pitch=${pitch}`,
+  '--volume=+0%',
+  '--file', tempPath,
+  '--write-media', outputPath,
+  '--no-progress',
+];
 
-if (result.error && result.error.code === 'ENOENT') {
-  engine = 'espeak';
-  result = spawnSync(engine, args, {encoding: 'utf8'});
-}
+const result = spawnSync(executable, args, {encoding: 'utf8'});
 
 try {
   fs.unlinkSync(tempPath);
 } catch {
-  // The temporary script is not needed after synthesis.
+  // The temporary narration text is no longer needed.
 }
 
-if (result.error) {
-  throw new Error('eSpeak NG (or compatible eSpeak) is required to generate Indonesian narration. Install espeak-ng first.');
+if (result.error || result.status !== 0) {
+  const detail = result.error?.message || result.stderr || result.stdout || 'unknown error';
+  throw new Error(
+    `Neural narration generation failed using ${voice}: ${detail}. Install edge-tts in .venv-tts and ensure the build has internet access.`,
+  );
 }
 
-if (result.status !== 0) {
-  throw new Error(`Narration synthesis failed: ${result.stderr || result.stdout || 'unknown error'}`);
+if (!fs.existsSync(outputPath)) {
+  throw new Error('Neural narration did not create the expected MP3 file.');
 }
 
-const wav = fs.readFileSync(outputPath);
-if (wav.length < 44 || wav.toString('ascii', 0, 4) !== 'RIFF' || wav.toString('ascii', 8, 12) !== 'WAVE') {
-  throw new Error('Narration output is not a valid WAV file.');
-}
+const audio = fs.readFileSync(outputPath);
+const hasId3Header = audio.length >= 10 && audio.toString('ascii', 0, 3) === 'ID3';
+const hasMpegFrameHeader = audio.length >= 2 && audio[0] === 0xff && (audio[1] & 0xe0) === 0xe0;
 
-const byteRate = wav.readUInt32LE(28);
-const dataBytes = wav.readUInt32LE(40);
-const durationSeconds = dataBytes / byteRate;
-
-if (!Number.isFinite(durationSeconds) || durationSeconds < 10 || durationSeconds > 89.5) {
+if (audio.length < 10_000 || (!hasId3Header && !hasMpegFrameHeader)) {
   fs.unlinkSync(outputPath);
-  throw new Error(`Narration duration must be between 10 and 89.5 seconds; received ${durationSeconds.toFixed(2)} seconds. Adjust the speech rate or script.`);
+  throw new Error('Narration output is not a valid MP3 stream or is unexpectedly small.');
 }
 
-console.log(`Generated Indonesian Tunas Dewa narration with ${engine}: ${durationSeconds.toFixed(2)} seconds`);
+console.log(
+  `Generated Indonesian neural narration: voice=${voice}, rate=${rate}, pitch=${pitch}, size=${audio.length} bytes`,
+);
