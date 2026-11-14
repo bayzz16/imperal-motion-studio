@@ -42,10 +42,16 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install eSpeak NG for Indonesian narration
+      - name: Set up Python for neural narration
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install neural Indonesian TTS
         run: |
-          sudo apt-get update
-          sudo apt-get install --yes espeak-ng
+          python -m venv .venv-tts
+          .venv-tts/bin/python -m pip install --upgrade pip
+          .venv-tts/bin/python -m pip install edge-tts==7.3.1
 
       - name: Install dependencies
         run: npm install
@@ -73,7 +79,11 @@ jobs:
       - name: Generate original music and sound effects
         run: node scripts/generate-audio.cjs
 
-      - name: Generate Indonesian Tunas Dewa narration
+      - name: Generate natural Indonesian neural narration
+        env:
+          TTS_VOICE: id-ID-ArdiNeural
+          TTS_RATE: -4%
+          TTS_PITCH: -2Hz
         run: node scripts/generate-tunas-dewa-voice.cjs
 
       - name: Render MP4
