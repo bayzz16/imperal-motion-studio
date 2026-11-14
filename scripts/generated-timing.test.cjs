@@ -38,3 +38,16 @@ test('trigonometry narration generator has valid JavaScript syntax', () => {
   const source = fs.readFileSync(path.join(root, 'scripts', 'generate-trigonometri-voice.cjs'), 'utf8');
   assert.doesNotThrow(() => new vm.Script(source, {filename: 'generate-trigonometri-voice.cjs'}));
 });
+
+test('all CommonJS build and render scripts have valid JavaScript syntax', () => {
+  const scriptsDir = path.join(root, 'scripts');
+  const files = fs.readdirSync(scriptsDir).filter((file) => file.endsWith('.cjs'));
+  assert.ok(files.length > 0, 'Expected build scripts to validate');
+  for (const file of files) {
+    const source = fs.readFileSync(path.join(scriptsDir, file), 'utf8');
+    assert.doesNotThrow(
+      () => new vm.Script(source, {filename: file}),
+      file + ' must parse before any render work begins',
+    );
+  }
+});
