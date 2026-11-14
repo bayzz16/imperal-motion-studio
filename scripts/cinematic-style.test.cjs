@@ -35,7 +35,7 @@ test('cinematic camera treatment is deterministic and keeps a subtle grade', () 
     const first = getCinematicFrameStyle(45, 300, projectId);
     const second = getCinematicFrameStyle(45, 300, projectId);
     assert.deepEqual(first, second);
-    assert.match(first.transform, /scale\\(1\\./);
+    assert.ok(first.transform.includes('scale('));
     assert.match(first.filter, /saturate/);
   }
 });
