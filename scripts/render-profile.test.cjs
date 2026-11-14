@@ -17,25 +17,25 @@ test('uses standard quality on a constrained machine', () => {
   assert.equal(profile.concurrency, 1);
 });
 
-test('selects balanced scaling when memory and CPU allow it', () => {
+test('keeps standard scale even when memory and CPU allow more resources', () => {
   const profile = resolveRenderProfile({
     totalMemoryBytes: gib(8),
     freeMemoryBytes: gib(5),
     cpuCount: 4,
   });
-  assert.equal(profile.name, 'balanced');
-  assert.equal(profile.scale, 1.25);
+  assert.equal(profile.name, 'standard');
+  assert.equal(profile.scale, 1);
   assert.equal(profile.concurrency, 1);
 });
 
-test('selects high and ultra profiles only when all resource thresholds pass', () => {
+test('keeps standard scale on high-resource machines too', () => {
   const high = resolveRenderProfile({
     totalMemoryBytes: gib(16),
     freeMemoryBytes: gib(10),
     cpuCount: 8,
   });
-  assert.equal(high.name, 'high');
-  assert.equal(high.scale, 1.5);
+  assert.equal(high.name, 'standard');
+  assert.equal(high.scale, 1);
   assert.equal(high.concurrency, 2);
 
   const ultra = resolveRenderProfile({
@@ -43,8 +43,8 @@ test('selects high and ultra profiles only when all resource thresholds pass', (
     freeMemoryBytes: gib(20),
     cpuCount: 12,
   });
-  assert.equal(ultra.name, 'ultra');
-  assert.equal(ultra.scale, 2);
+  assert.equal(ultra.name, 'standard');
+  assert.equal(ultra.scale, 1);
   assert.equal(ultra.concurrency, 4);
 });
 
@@ -54,8 +54,8 @@ test('keeps cinematic encoding settings consistent across resource tiers', () =>
     freeMemoryBytes: gib(10),
     cpuCount: 8,
   });
-  assert.equal(profile.jpegQuality, 95);
-  assert.equal(profile.crf, 18);
+  assert.equal(profile.jpegQuality, 90);
+  assert.equal(profile.crf, 23);
 });
 
 test('rejects invalid or impossible resource measurements', () => {
