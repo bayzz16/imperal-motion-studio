@@ -32,7 +32,7 @@ const {parseCaptionFile, validateCaptions, resolveCaptionLayout} = captionModule
 
 test('parses strict SRT cues into the shared caption shape', () => {
   const parsed = parseCaptionFile(
-    '1\\n00:00:00,000 --> 00:00:01,500\\nHalo dunia!\\n\\n2\\n00:00:02,000 --> 00:00:03,000\\nSelamat datang.',
+    '1\n00:00:00,000 --> 00:00:01,500\nHalo dunia!\n\n2\n00:00:02,000 --> 00:00:03,000\nSelamat datang.',
     'srt',
   );
 
@@ -48,19 +48,19 @@ test('parses strict SRT cues into the shared caption shape', () => {
 
 test('parses WebVTT identifiers, settings and multi-line cue text', () => {
   const parsed = parseCaptionFile(
-    'WEBVTT\\n\\nintro\\n00:00:01.000 --> 00:00:03.000 align:start position:10%\\nBaris pertama\\nBaris kedua',
+    'WEBVTT\n\nintro\n00:00:01.000 --> 00:00:03.000 align:start position:10%\nBaris pertama\nBaris kedua',
     'vtt',
   );
 
   assert.equal(parsed.length, 1);
-  assert.equal(parsed[0].text, 'Baris pertama\\nBaris kedua');
+  assert.equal(parsed[0].text, 'Baris pertama\nBaris kedua');
   assert.equal(parsed[0].startMs, 1000);
   assert.equal(parsed[0].endMs, 3000);
 });
 
 test('strict SRT parsing rejects malformed timing data', () => {
   assert.throws(
-    () => parseCaptionFile('1\\n00:00:03,000 --> 00:00:01,000\\nTerbalik', 'srt'),
+    () => parseCaptionFile('1\n00:00:03,000 --> 00:00:01,000\nTerbalik', 'srt'),
   );
 });
 
