@@ -25,19 +25,10 @@ const resolveRenderProfile = ({totalMemoryBytes, freeMemoryBytes, cpuCount}) => 
   const totalGiB = totalMemoryBytes / GIB;
   const freeGiB = freeMemoryBytes / GIB;
 
-  let name = 'standard';
-  let scale = 1;
-
-  if (totalGiB >= 32 && freeGiB >= 16 && cpuCount >= 12) {
-    name = 'ultra';
-    scale = 2;
-  } else if (totalGiB >= 16 && freeGiB >= 8 && cpuCount >= 8) {
-    name = 'high';
-    scale = 1.5;
-  } else if (totalGiB >= 8 && freeGiB >= 4 && cpuCount >= 4) {
-    name = 'balanced';
-    scale = 1.25;
-  }
+  // Keep the encoded dimensions equal to the composition dimensions. Upscaling
+  // the render does not improve vector artwork or scene design.
+  const name = 'standard';
+  const scale = 1;
 
   // Reserve at least 4 GiB of free memory per concurrent Chromium renderer.
   const memoryConcurrency = Math.max(1, Math.floor(freeGiB / 4));
@@ -47,8 +38,8 @@ const resolveRenderProfile = ({totalMemoryBytes, freeMemoryBytes, cpuCount}) => 
     name,
     scale,
     concurrency,
-    jpegQuality: 95,
-    crf: 18,
+    jpegQuality: 90,
+    crf: 23,
     totalMemoryGiB: Number(totalGiB.toFixed(2)),
     freeMemoryGiB: Number(freeGiB.toFixed(2)),
     cpuCount,
