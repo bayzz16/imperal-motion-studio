@@ -21,7 +21,8 @@ All projects are separate Remotion compositions registered in `src/projects/regi
 - Camera movement regression tests covering all presets, deterministic output, frame clamping, and invalid inputs.
 - Motion-physics tests covering spring overshoot, easing endpoints, range mapping, damping, and invalid parameters.
 - Adaptive cinematic render profiles that select output scale and render concurrency from available RAM and CPU resources.
-- Reusable animated celestial-body visuals (axial rotation, surface shading, atmosphere, clouds, and ring layers) in `src/visual/`, now used by Galaxy Education.
+- Reusable animated celestial-body visuals (axial rotation, surface shading, atmosphere, clouds, and ring layers) in `src/visual/`.
+- A real Three.js / React Three Fiber solar-system scene in Galaxy Education, with frame-deterministic planet orbits, sphere geometry, lighting, Saturn's rings, and a graceful 2D fallback if WebGL initialization fails.
 - Shared cinematic finishing layer applied to every registered composition: subtle camera movement, restrained color grade, vignette, and low-opacity film texture.
 - Extended MP4 quality checks for audio/video presence, dimensions, frame rate, A/V duration drift, full-stream decoding, possible black/frozen sections, and measured audio volume.
 - Motion regression tests plus MP4 validation for video/audio streams, duration, dimensions, frame rate, A/V drift, and full-stream decode diagnostics.
@@ -42,7 +43,7 @@ GitHub Actions selects a conservative render profile from the runner's available
 
 Profiles range from standard (1x) through balanced (1.25x), high (1.5x), and ultra (2x). Scaling increases output dimensions and can improve vector/text rasterization detail; it does not create new source-image detail, and it increases render cost. The workflow also uses H.264 CRF 18 and a high JPEG frame quality setting.
 
-The profile resolver is covered by unit tests in `scripts/render-profile.test.cjs`. Its thresholds are resource heuristics, not a guarantee that every render will fit available memory. The shared cinematic finish is tested in `scripts/cinematic-style.test.cjs`; media metadata and quality-log parsing are tested in `scripts/validate-render.test.cjs`. The full-stream black/freeze scan is advisory because intentional fades and static shots can trigger detections.
+The 3D orbit mathematics is covered by `scripts/solar-system-kinematics.test.cjs`. The render workflow uses Remotion's `swangle` OpenGL backend so WebGL can run through a software path on GPU-less GitHub Actions runners. The profile resolver is covered by unit tests in `scripts/render-profile.test.cjs`. Its thresholds are resource heuristics, not a guarantee that every render will fit available memory. The shared cinematic finish is tested in `scripts/cinematic-style.test.cjs`; media metadata and quality-log parsing are tested in `scripts/validate-render.test.cjs`. The full-stream black/freeze scan is advisory because intentional fades and static shots can trigger detections.
 
 ## Validate changes
 
@@ -109,7 +110,7 @@ Output: `out/tunas-dewa.mp4`. The narration voice, speaking rate, and pitch can 
 The **Render video** workflow supports both:
 
 - **Automatic rendering:** pushes to `main` that change files under `.github/workflows/`, `src/`, `scripts/`, `public/`, or `package.json`. The default render is **TunasDewa**.
-- **Manual rendering:** open **Actions → Render video → Run workflow**, then enter a registered composition ID and an MP4 filename. Available IDs: `TunasKecil`, `TunasDewa`, and `ImperialSolTeaser`.
+- **Manual rendering:** open **Actions → Render video → Run workflow**, then enter a registered composition ID and an MP4 filename. Available IDs are maintained in `src/projects/registry.ts`; current compositions include `TunasKecil`, `TunasDewa`, `TrigonometriPraktik`, `KyandraRoast`, `GalaxyEducation`, and `ImperialSolTeaser`.
 
 For the new teaser, use composition ID `ImperialSolTeaser` and filename `imperial-sol-teaser.mp4`. The workflow generates the narration that matches the selected composition, renders the MP4, and uploads it as an artifact. After a successful run, download the MP4 from that run's **Artifacts** section.
 
