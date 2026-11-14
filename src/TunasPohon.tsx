@@ -1,10 +1,31 @@
 import React from 'react';
 import {Audio} from '@remotion/media';
 import {AbsoluteFill, interpolate, staticFile, useCurrentFrame} from 'remotion';
+import {getEnvironmentAtFrame, getEnvironmentAudioVolume, getPrecipitationVelocity, validateEnvironmentTimeline, type EnvironmentTimeline} from './environment/scene-environment';
 
 const FPS = 30;
 const DURATION = 90 * FPS;
 const SCENE_FRAMES = 450;
+
+const ENVIRONMENT_TIMELINE: EnvironmentTimeline = {
+  durationInFrames: DURATION,
+  cues: [
+    {id: 'morning-before-rain', startFrame: 0, endFrame: 35,
+      state: {weather: 'partly-cloudy', cloudCoverage: 0.28, sunlight: 0.62, windX: 0.08}},
+    {id: 'clouds-gather', startFrame: 35, endFrame: 90,
+      state: {weather: 'overcast', cloudCoverage: 0.92, sunlight: 0.12, windX: 0.18}},
+    {id: 'rain-wets-soil', startFrame: 90, endFrame: 330,
+      state: {weather: 'rain', cloudCoverage: 0.96, sunlight: 0.08, windX: 0.32,
+        precipitation: {kind: 'rain', gravityPxPerFrame: 17, windDriftPxPerFrame: 3}},
+      audioCues: [{id: 'rain-ambience', src: 'audio/rain-bed.wav', startFrame: 90, endFrame: 330,
+        volume: 0.34, fadeInFrames: 24, fadeOutFrames: 45}]},
+    {id: 'rain-clears', startFrame: 330, endFrame: 450,
+      state: {weather: 'partly-cloudy', cloudCoverage: 0.48, sunlight: 0.48, windX: 0.12}},
+    {id: 'growing-daylight', startFrame: 450, endFrame: DURATION,
+      state: {weather: 'partly-cloudy', cloudCoverage: 0.24, sunlight: 0.78, windX: 0.04}},
+  ],
+};
+validateEnvironmentTimeline(ENVIRONMENT_TIMELINE);
 
 const scenes = [
   {tag: 'AWAL KEHIDUPAN', title: 'Semuanya bermula\ndari sebuah biji.', subtitle: 'Hujan membasahi tanah; air meresap menuju biji.'},
@@ -88,21 +109,35 @@ export const TunasPohon: React.FC = () => {
   const localFrame = frame - sceneIndex * SCENE_FRAMES;
   const scene = scenes[sceneIndex];
   const sceneOpacity = interpolate(localFrame, [0, 20, SCENE_FRAMES - 22, SCENE_FRAMES], [0, 1, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  // Establish the moisture source before the seed begins germinating.
-  const rain = sceneIndex === 0 ? interpolate(localFrame, [35, 90, 245, 330], [0, 0.85, 0.85, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) : 0;
+  // Weather is driven by the shared, validated environment timeline.
+  const environmentCue = getEnvironmentAtFrame(ENVIRONMENT_TIMELINE, frame);
+  const environment = environmentCue?.state;
+  const rain = environment?.precipitation?.kind === 'rain'
+    ? interpolate(frame, [90, 110, 310, 330], [0, 0.9, 0.9, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})
+    : 0;
+  const precipitationVelocity = environment?.precipitation
+    ? getPrecipitationVelocity(environment)
+    : {x: 0, y: 0};
+  const cloudCoverage = environment?.cloudCoverage ?? 0.25;
+  const sunlight = environment?.sunlight ?? 0.7;
+  const cloudDarkness = interpolate(cloudCoverage, [0.25, 0.95], [0.08, 0.72], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const soilMoisture = interpolate(frame, [80, 230, 430, 700], [0, 0.92, 0.78, 0.38], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const sunGlow = interpolate(progress, [0.05, 0.8], [0.1, 0.65], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const sunGlow = sunlight * interpolate(progress, [0.05, 0.8], [0.25, 0.78], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const musicVolume = interpolate(frame, [0, 80, 2300, 2699], [0.045, 0.07, 0.075, 0.05], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
   return (
     <>
       <Audio src={staticFile('audio/music-bed.wav')} volume={musicVolume}/>
+      <Audio src={staticFile('audio/rain-bed.wav')} from={90} durationInFrames={240} volume={(audioFrame) => {
+        const cue = ENVIRONMENT_TIMELINE.cues[2].audioCues![0];
+        return getEnvironmentAudioVolume(cue, audioFrame + 90);
+      }}/>
       <Audio src={staticFile('audio/soft-chime.wav')} from={0} volume={0.1}/>
       <Audio src={staticFile('audio/seedling.wav')} from={360} volume={0.13}/>
       <Audio src={staticFile('audio/soft-chime.wav')} from={2200} volume={0.14}/>
       <Audio src={staticFile('audio/tunas-pohon-narration.mp3')} volume={1}/>
       <AbsoluteFill style={{background: 'linear-gradient(180deg,#b9d8e4 0%,#e2e8d4 42%,#c5d3a7 100%)', color: '#21352a', fontFamily: 'Arial, sans-serif', overflow: 'hidden'}}>
-        <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at 76% 28%, rgba(255,237,177,${sunGlow}) 0%, transparent 34%)`}}/>
+        <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at 76% 28%, rgba(255,237,177,${sunGlow}) 0%, transparent 34%), linear-gradient(180deg, rgba(24,35,49,${cloudDarkness}) 0%, rgba(24,35,49,${cloudDarkness * 0.52}) 48%, transparent 78%)`}}/>
         <div style={{position: 'absolute', top: 70, left: 65, right: 65, display: 'flex', justifyContent: 'space-between', fontSize: 16, letterSpacing: 3, color: '#385448', fontWeight: 700}}>
           <span>IMPERAL MOTION STUDIO</span><span>{String(sceneIndex + 1).padStart(2, '0')} / 06</span>
         </div>
@@ -116,11 +151,14 @@ export const TunasPohon: React.FC = () => {
             <linearGradient id="soil" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#926b4c"/><stop offset="100%" stopColor="#503c31"/></linearGradient>
             <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#83a96b"/><stop offset="100%" stopColor="#476c49"/></linearGradient>
           </defs>
-          <g opacity="0.55">
-            <path d="M-80 430 C70 360 170 385 255 430 C320 350 455 355 510 420 C590 340 720 360 790 415 C875 355 1010 370 1150 430" fill="#fff" opacity="0.62"/>
-            <path d="M-80 510 C70 455 170 470 255 510 C320 435 455 440 510 500 C590 425 720 445 790 495 C875 435 1010 450 1150 510" fill="#fff" opacity="0.45"/>
+          <g opacity={interpolate(cloudCoverage, [0.15, 0.9], [0.32, 0.98], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}
+            transform={`translate(${-((frame * (0.32 + (environment?.windX ?? 0) * 0.8)) % 420)} 0)`}>
+            <path d="M-80 430 C70 360 170 385 255 430 C320 350 455 355 510 420 C590 340 720 360 790 415 C875 355 1010 370 1150 430 L1150 535 L-80 535Z"
+              fill={cloudCoverage > 0.65 ? '#53616b' : '#fff'} opacity="0.72"/>
+            <path d="M-80 510 C70 455 170 470 255 510 C320 435 455 440 510 500 C590 425 720 445 790 495 C875 435 1010 450 1150 510 L1150 555 L-80 555Z"
+              fill={cloudCoverage > 0.65 ? '#394957' : '#fff'} opacity="0.58"/>
           </g>
-          <circle cx="840" cy="600" r="155" fill="#fff0b9" opacity={0.22 + sunGlow * 0.28}/>
+          <circle cx="840" cy="600" r="155" fill="#fff0b9" opacity={sunGlow * (1 - cloudCoverage * 0.82)}/>
           <path d="M0 1280 Q250 1250 520 1280 T1080 1265 V1920 H0Z" fill="url(#soil)"/>
           <path d="M0 1270 Q250 1240 520 1270 T1080 1255 L1080 1310 Q760 1330 540 1310 Q250 1335 0 1310Z" fill="url(#grass)"/>
           <g opacity="0.32" fill="#d5b18a">
@@ -138,8 +176,20 @@ export const TunasPohon: React.FC = () => {
             <circle cx={580 + Math.cos(frame / 15) * 11} cy={1312 + Math.sin(frame / 19) * 7} r="4" fill="#a8e5f3"/>
           </g>
           <GrowingTree growth={progress} frame={frame}/>
-          <g opacity={rain} stroke="#e9f2f1" strokeWidth="4" strokeLinecap="round">
-            {Array.from({length: 34}, (_, i) => <path key={i} d={`M${(i * 97) % 1080} ${550 + ((i * 53) % 580)} l-32 78`} opacity="0.55"/>)}
+          <g opacity={rain} stroke="#e2f2f6" strokeWidth="4" strokeLinecap="round">
+            {Array.from({length: 58}, (_, i) => {
+              const baseX = (i * 97 + frame * precipitationVelocity.x) % 1160;
+              const x = baseX < 0 ? baseX + 1160 : baseX;
+              const y = 520 + ((i * 53 + frame * precipitationVelocity.y) % 720);
+              return <path key={i} d={`M${x} ${y} l${precipitationVelocity.x * 2.4} ${precipitationVelocity.y * 4.6}`} opacity={0.35 + (i % 5) * 0.1}/>;
+            })}
+          </g>
+          <g opacity={rain * 0.65} fill="none" stroke="#9bd7e7" strokeWidth="3">
+            {Array.from({length: 9}, (_, i) => {
+              const x = 95 + i * 112;
+              const phase = (frame * 2.4 + i * 31) % 90;
+              return <path key={i} d={`M${x - phase * 0.16} 1278 q12 -8 24 0`} opacity={Math.max(0, 1 - phase / 90)}/>;
+            })}
           </g>
           <g opacity={interpolate(progress, [0.18, 0.45], [0, 0.9], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})} stroke="#d5e5a8" strokeWidth="5" strokeLinecap="round">
             <path d="M120 1270 l-10 -40 M155 1270 l8 -54 M930 1265 l-4 -42 M975 1265 l14 -52"/>

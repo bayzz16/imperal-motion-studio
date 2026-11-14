@@ -86,6 +86,18 @@ writeWav('seedling.wav', 1.8, (t) => {
   return bell * 0.13 + shimmer * 0.035;
 });
 
+
+writeWav('rain-bed.wav', 8, (t) => {
+  const fadeIn = Math.min(1, t / 0.7);
+  const fadeOut = Math.min(1, (8 - t) / 1.1);
+  const steady = 0.72 + 0.08 * Math.sin(2 * Math.PI * 0.23 * t);
+  const noise = (random() * 2 - 1);
+  const fineDrops = Math.sin(2 * Math.PI * (2100 + random() * 1700) * t) * 0.08;
+  const lowWash = Math.sin(2 * Math.PI * 115 * t) * 0.035;
+  const dropPulse = Math.pow(Math.max(0, Math.sin(2 * Math.PI * 3.7 * t + 0.3)), 18);
+  return (noise * 0.12 + fineDrops + lowWash + dropPulse * (random() * 0.22)) * steady * fadeIn * fadeOut;
+});
+
 writeWav('soft-impact.wav', 1.1, (t) => {
   const low = Math.sin(2 * Math.PI * (85 - 38 * (t / 1.1)) * t) * Math.exp(-t * 4);
   const transient = (random() * 2 - 1) * Math.exp(-t * 28);
