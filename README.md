@@ -16,7 +16,9 @@ All projects are separate Remotion compositions registered in `src/projects/regi
 - Project registry for independent compositions.
 - Reusable sequential scene-timeline planning and a Remotion `SceneSequence` adapter.
 - Automated scene-timeline unit tests.
-- Deterministic camera-movement utility in `src/motion/camera-moves.ts`.
+- Deterministic camera movement and reusable frame-driven motion/orbit mathematics in `src/motion/`.
+- Reusable animated celestial-body visuals (axial rotation, surface shading, atmosphere, clouds, and ring layers) in `src/visual/`.
+- Motion regression tests plus MP4 validation for video/audio streams, duration, and dimensions.
 - GitHub Actions rendering to MP4, with downloadable artifacts retained for 14 days.
 
 ## Run locally
