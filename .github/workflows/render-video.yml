@@ -76,6 +76,11 @@ jobs:
             exit 1
           fi
 
+      - name: Install FFmpeg for narration assembly and duration measurement
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
       - name: Generate original music and sound effects
         run: node scripts/generate-audio.cjs
 
