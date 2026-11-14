@@ -3,7 +3,7 @@ const path=require('node:path');
 const {spawnSync}=require('node:child_process');
 const ts=require('typescript');
 
-// Indonesian neural TTS currently exposes two standard id-ID identities; per-character rate and pitch create six distinguishable role profiles.
+// All dialogue lines use the same narrator voice.
 const dialogue=[
  {speaker:'Filza',scene:'opening',text:'Halo semuanya! Kami dari kelompok kelas sepuluh E dua.'},
  {speaker:'Falyn',scene:'opening',text:'Hari ini kami akan mempraktikkan teori trigonometri untuk memperkirakan tinggi tiang bendera.'},
@@ -30,14 +30,10 @@ const dialogue=[
  {speaker:'Filza',scene:'closing',text:'Terima kasih sudah menyaksikan video kami!'},
 ];
 
-const profiles={
- Filza:{voice:'id-ID-GadisNeural',rate:'+3%',pitch:'+5Hz'},
- Falyn:{voice:'id-ID-GadisNeural',rate:'-5%',pitch:'-3Hz'},
- Taysa:{voice:'id-ID-GadisNeural',rate:'+7%',pitch:'+9Hz'},
- Rahma:{voice:'id-ID-GadisNeural',rate:'-8%',pitch:'-7Hz'},
- Miko:{voice:'id-ID-ArdiNeural',rate:'+4%',pitch:'+3Hz'},
- Bayu:{voice:'id-ID-ArdiNeural',rate:'-4%',pitch:'-4Hz'},
-};
+// One consistent Indonesian neural narrator for the entire practice video.
+const voice=process.env.TTS_VOICE||'id-ID-ArdiNeural';
+const rate=process.env.TTS_RATE||'-4%';
+const pitch=process.env.TTS_PITCH||'-2Hz';
 const root=process.cwd(),dir=path.join(root,'public','audio','trigonometri');
 fs.mkdirSync(dir,{recursive:true});
 const exe=process.env.EDGE_TTS_BIN||path.join(root,'.venv-tts',process.platform==='win32'?'Scripts/edge-tts.exe':'bin/edge-tts');
@@ -45,10 +41,10 @@ const run=(cmd,args)=>{const r=spawnSync(cmd,args,{encoding:'utf8'});if(r.error|
 const fps=30,gapFrames=12;let cursor=0;
 const cues=[];
 for(let i=0;i<dialogue.length;i++){
- const line=dialogue[i],profile=profiles[line.speaker];
+ const line=dialogue[i];
  const file='audio/trigonometri/dialogue-'+String(i+1).padStart(2,'0')+'.mp3';
  const output=path.join(root,'public',file);
- run(exe,['--voice',profile.voice,'--rate='+profile.rate,'--pitch='+profile.pitch,'--volume=+0%','--text',line.text,'--write-media',output,'--no-progress']);
+ run(exe,['--voice',voice,'--rate='+rate,'--pitch='+pitch,'--volume=+0%','--text',line.text,'--write-media',output,'--no-progress']);
  const size=fs.statSync(output).size;
  if(size<2500)throw new Error('TTS dialogue '+(i+1)+' is too small ('+size+' bytes)');
  const duration=Number(run('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',output]));
@@ -57,12 +53,12 @@ for(let i=0;i<dialogue.length;i++){
  cues.push({...line,file,startFrame:cursor,durationFrames:frames});
  cursor+=frames+gapFrames;
 }
-if(new Set(cues.map((cue)=>cue.speaker)).size!==6)throw new Error('Expected dialogue from all six group members');\nconst total=cursor+fps*2;
-const output='// Generated from measured per-speaker neural dialogue audio.\nexport const TRIGONOMETRI_DIALOGUE_CUES = '+JSON.stringify(cues,null,2)+' as const;\nexport const TRIGONOMETRI_DURATION_FRAMES = '+total+';\n';
+const total=cursor+fps*2;
+const output='// Generated from measured single-voice Indonesian narration audio.\nexport const TRIGONOMETRI_DIALOGUE_CUES = '+JSON.stringify(cues,null,2)+' as const;\nexport const TRIGONOMETRI_DURATION_FRAMES = '+total+';\n';
 const compiled=ts.transpileModule(output,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2020},reportDiagnostics:true});
 const errors=(compiled.diagnostics||[]).filter((diagnostic)=>diagnostic.category===ts.DiagnosticCategory.Error);
 if(errors.length)throw new Error('Generated timing module failed TypeScript validation: '+errors.map((diagnostic)=>ts.flattenDiagnosticMessageText(diagnostic.messageText,' ')).join('; '));
 fs.writeFileSync(path.join(root,'src/generated/trigonometri-timing.ts'),output);
-console.log('Generated and measured '+cues.length+' dialogue clips for six speakers.');
-console.log('Distinct character profiles: '+Object.keys(profiles).join(', '));
+console.log('Generated and measured '+cues.length+' narration clips using one voice.');
+console.log('Narrator voice: '+voice+' ('+rate+', '+pitch+').');
 console.log('Total duration: '+(total/fps).toFixed(2)+' seconds.');
