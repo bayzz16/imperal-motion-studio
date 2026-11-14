@@ -61,7 +61,7 @@ node scripts/generate-imperial-sol-voice.cjs
 npx remotion render src/index.tsx ImperialSolTeaser out/imperial-sol-teaser.mp4
 ```
 
-Output: `out/imperial-sol-teaser.mp4`. This composition is 1080×1920, 30 FPS, 72 seconds. The neural narration requires internet access and uses the online Microsoft Edge speech service through the community `edge-tts` client. If speech generation fails, the command stops rather than substituting a different voice.
+Output: `out/imperial-sol-teaser.mp4`. The composition is 1080×1920 at 30 FPS. The build measures each generated narration segment and derives scene start frames and total composition duration from the actual audio. The neural narration requires internet access and uses the online Microsoft Edge speech service through the community `edge-tts` client. If speech generation fails, the command stops rather than substituting a different voice.
 
 ## Render Tunas Dewa with natural narration
 
