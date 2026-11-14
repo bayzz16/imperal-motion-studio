@@ -104,3 +104,70 @@ For example, if narration says a seed absorbs water, establish a plausible moist
 Reject sequences where an object changes without a visible or established cause, narration describes an action absent from the frame, an effect appears before its cause, physical continuity breaks between shots, or audio timing contradicts the visuals.
 
 Apply this gate to educational, scientific, procedural, and story-driven animations. Record the sequence in the storyboard/reference sheet and verify it in rendered frames.
+
+## Mandatory environment, weather, and soundscape continuity gate
+
+Treat the environment as a causal system, not a decorative background. This gate applies whenever a scene includes weather, sunlight, clouds, wind, water, fire, dust, day/night, or any environmental condition that affects the subject.
+
+### 1. Build an environment state before animation
+
+For every scene, explicitly define:
+- weather state: clear, partly cloudy, overcast, rain, storm, snow, fog, etc.;
+- light source and direction, intensity, color temperature, and shadow behavior;
+- cloud coverage, shape, movement direction, and density;
+- wind direction and strength, including which objects respond to it;
+- precipitation or particles: source, direction, speed, density, and interaction with surfaces;
+- ground/surface state: dry, damp, wet, puddled, muddy, steaming, or drying;
+- ambient sound and event sounds, with exact timeline ranges;
+- transition trigger and transition duration to the next environment state.
+
+A storyboard must include an environment-state row for every shot. Do not let the environment silently reset between shots unless the story establishes a location/time cut.
+
+### 2. Enforce physical direction and cause/effect
+
+- Gravity-driven rain, snow, and falling objects must travel from higher screen/world positions to lower ones. Wind may add a consistent horizontal drift, but must not make rain appear to rise.
+- Clouds must exist before or during the rainfall they cause. Build a legible sequence such as cloud approach/thickening -> daylight reduction and cooler/dimmer lighting -> first drops -> sustained rain -> surface wetting/runoff or absorption -> rain easing/stopping -> clouds thinning and light returning.
+- Do not show full-strength harsh sunshine and a dense dark storm as simultaneous dominant conditions unless the shot intentionally depicts a physically plausible sunshower or a clear break in cloud cover. If sunshower is intended, communicate it clearly through lighting and narration.
+- If narration says the sun is intense, show a clear sky or appropriate cloud cover, directional bright light, and coherent shadows/heat cues. Do not leave storm clouds in the same shot without an explained transition.
+- Rain must visibly interact with the world: ground darkens or becomes wet, leaves/soil receive droplets, runoff or absorption appears where relevant. Do not show water reaching a seed before the water source and path are established.
+- Wind should affect appropriate elements (tree crowns, grass, loose leaves, rain angle, cloud drift) in one coherent direction. Do not animate unrelated objects with contradictory wind directions.
+- Thunder, lightning, and storm intensity must agree. Do not add thunder as generic ambience in a calm drizzle; do not imply lightning in audio while showing an ordinary clear sky.
+
+### 3. Audio must describe the same world as the image
+
+Keep narration, music, ambience, and discrete effects on separate tracks. For every environment event:
+- create an audio cue with start/end frames and a clear relationship to the visual event;
+- use a continuous ambience bed only while that environment state is active;
+- synchronize first raindrops, rainfall build, thunder, wind gusts, birds, insects, or other distinct events to visible or established causes;
+- fade ambience in/out across weather transitions rather than abruptly switching or leaving rain audio under a sunny scene;
+- keep ambience below narration, avoid masking speech, clipping, loops with obvious seams, and unexplained sound sources;
+- record whether each sound is original, generated, licensed, or otherwise permitted, with provenance.
+
+If no suitable audio asset exists, do not silently substitute an unrelated sound. Mark the cue as missing and either generate/create a suitable permitted asset or disclose the limitation.
+
+### 4. Create a synchronized environment cue sheet
+
+Before rendering, prepare a table with at least:
+- shot/timecode or frame range;
+- weather and lighting state;
+- cloud/sun state;
+- wind and precipitation direction;
+- visible environmental change;
+- ambient/effect audio cue and fade;
+- narration phrase;
+- continuity notes.
+
+Every narration statement about the environment must map to a visible cue and, when appropriate, a matching sound cue. Conversely, every prominent weather visual or sound must have a narrative/story purpose.
+
+### 5. Automated and human acceptance checks
+
+Add deterministic tests for reusable environment helpers and cue timelines where code supports them. At minimum, verify:
+- precipitation direction has a downward gravity component;
+- cue frame ranges are valid, ordered, and within composition duration;
+- environment transitions do not overlap in contradictory states unless explicitly marked as intentional;
+- ambience does not continue beyond its state without a fade;
+- audio files referenced by the composition exist;
+- scene metadata and rendered composition agree on frame rate, duration, and dimensions.
+
+Then inspect rendered frames at weather-state boundaries and listen to audio at the same timecodes. A passing TypeScript check or MP4 metadata check does not prove that rain direction, lighting, cloud behavior, or audio synchronization looks and sounds correct. Record unverified items as unverified; never claim the environmental gate passed without both code-level checks and audiovisual inspection.
+
