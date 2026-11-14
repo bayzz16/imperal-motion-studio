@@ -2,7 +2,7 @@ import React from 'react';
 import {Audio} from '@remotion/media';
 import {AbsoluteFill, Easing, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import {GALAXY_SCENE_STARTS, GALAXY_DURATION_FRAMES} from './generated/galaxy-timing';
-import {CelestialBody} from './visual/CelestialBody';
+import {SolarSystem3D} from './visual/SolarSystem3D';
 
 const scenes = [
  {tag:'PERJALANAN DIMULAI',title:'KITA TINGGAL DI MANA?',sub:'Sebuah perjalanan dari rumah kita… menuju galaksi tempat Tata Surya berada.',accent:'#7dd3fc'},
@@ -54,7 +54,7 @@ export const GalaxyEducation:React.FC=()=>{
  <AbsoluteFill style={{background:'#050b1d',color:'#f8fafc',fontFamily:'Arial,sans-serif',overflow:'hidden'}}>
  <div style={{position:'absolute',top:58,left:52,right:52,display:'flex',justifyContent:'space-between',fontSize:16,letterSpacing:3,color:'#cbd5e1'}}><span>JELAJAHI ALAM SEMESTA</span><span>{String(idx+1).padStart(2,'0')} / 08</span></div>
  <div style={{position:'absolute',top:145,left:50,right:50,textAlign:'center',opacity:fade,transform:`translateY(${y}px)`}}><div style={{fontSize:17,letterSpacing:5,fontWeight:800,color:s.accent,marginBottom:18}}>{s.tag}</div><div style={{fontSize:idx===0?59:48,lineHeight:1.12,fontWeight:900}}>{s.title}</div><div style={{fontSize:23,lineHeight:1.4,color:'rgba(248,250,252,.82)',margin:'18px auto 0',maxWidth:930}}>{s.sub}</div></div>
- <div style={{position:'absolute',top:490,left:0,right:0,height:930}}><Panel scene={idx} frame={local} accent={s.accent}/></div>{idx===1&&<div style={{position:'absolute',top:760,left:0,right:0,display:'flex',justifyContent:'center',pointerEvents:'none'}}><CelestialBody id="galaxy-education-sun" kind="sun" size={350} rotationPeriodFrames={900} atmosphere /></div>}
+ <div style={{position:'absolute',top:490,left:0,right:0,height:930}}><Panel scene={idx} frame={local} accent={s.accent}/></div>{idx===1&&<div style={{position:'absolute',top:520,left:0,right:0,height:860,pointerEvents:'none'}}><SolarSystem3D /></div>}
  <div style={{position:'absolute',bottom:52,left:52,right:52}}><div style={{height:5,background:'rgba(255,255,255,.2)',borderRadius:5}}><div style={{height:5,width:`${frame/(GALAXY_DURATION_FRAMES-1)*100}%`,background:s.accent,borderRadius:5}}/></div><div style={{display:'flex',justifyContent:'space-between',marginTop:12,fontSize:13,letterSpacing:2,color:'#cbd5e1'}}><span>TATA SURYA KITA</span><span>ILUSTRASI TIDAK BERSKALA</span></div></div>
  </AbsoluteFill></>;
 };
