@@ -6,26 +6,36 @@ const path = require('node:path');
 const test = require('node:test');
 const ts = require('typescript');
 
-const file = path.join(__dirname, '..', 'src', 'visual', 'cinematic-style.ts');
-const source = fs.readFileSync(file, 'utf8');
-const compiled = ts.transpileModule(source, {
-  compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020},
-  reportDiagnostics: true,
-});
-assert.equal((compiled.diagnostics ?? []).filter((d) => d.category === ts.DiagnosticCategory.Error).length, 0);
+const loadTypeScriptModule = (file, customRequire = require) => {
+  const source = fs.readFileSync(file, 'utf8');
+  const compiled = ts.transpileModule(source, {
+    compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020},
+    reportDiagnostics: true,
+  });
+  const errors = (compiled.diagnostics ?? []).filter((d) => d.category === ts.DiagnosticCategory.Error);
+  assert.equal(errors.length, 0, file + ' should transpile without errors');
+  const mod = {exports: {}};
+  new Function('exports', 'require', 'module', '__filename', '__dirname', compiled.outputText)(
+    mod.exports, customRequire, mod, file, path.dirname(file),
+  );
+  return mod.exports;
+};
 
-const mod = {exports: {}};
-new Function('exports', 'require', 'module', '__filename', '__dirname', compiled.outputText)(
-  mod.exports, require, mod, file, path.dirname(file),
+const cameraPath = path.join(__dirname, '..', 'src', 'motion', 'camera-moves.ts');
+const cameraModule = loadTypeScriptModule(cameraPath);
+const cinematicPath = path.join(__dirname, '..', 'src', 'visual', 'cinematic-style.ts');
+const cinematicModule = loadTypeScriptModule(
+  cinematicPath,
+  (specifier) => specifier === '../motion/camera-moves' ? cameraModule : require(specifier),
 );
-const {getCinematicFrameStyle} = mod.exports;
+const {getCinematicFrameStyle} = cinematicModule;
 
 test('cinematic camera treatment is deterministic and keeps a subtle grade', () => {
   for (const projectId of ['GalaxyEducation', 'TunasDewa', 'ImperialSolTeaser']) {
     const first = getCinematicFrameStyle(45, 300, projectId);
     const second = getCinematicFrameStyle(45, 300, projectId);
     assert.deepEqual(first, second);
-    assert.match(first.transform, /scale\(1\./);
+    assert.match(first.transform, /scale\\(1\\./);
     assert.match(first.filter, /saturate/);
   }
 });
