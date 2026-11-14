@@ -153,7 +153,7 @@ const Landscape: React.FC<{frame: number; sceneIndex: number; light: string}> = 
 
 export const ImperialSolTeaser: React.FC = () => {
   const frame = useCurrentFrame();
-  const sceneIndex = Math.max(0, IMPERIAL_SOL_SCENE_STARTS.reduce((active, start, index) => frame >= start ? index : active, 0));
+  const sceneIndex = Math.max(0, IMPERIAL_SOL_SCENE_STARTS.reduce<number>((active, start, index) => frame >= start ? index : active, 0));
   const sceneStart = IMPERIAL_SOL_SCENE_STARTS[sceneIndex];
   const nextSceneStart = IMPERIAL_SOL_SCENE_STARTS[sceneIndex + 1] ?? IMPERIAL_SOL_DURATION_FRAMES;
   const local = frame - sceneStart;
