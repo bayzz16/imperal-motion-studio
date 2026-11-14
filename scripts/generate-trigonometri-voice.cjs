@@ -55,7 +55,7 @@ for(let i=0;i<dialogue.length;i++){
  cues.push({...line,file,startFrame:cursor,durationFrames:frames});
  cursor+=frames+gapFrames;
 }
-const total=cursor+fps*2;
+if(new Set(cues.map((cue)=>cue.speaker)).size!==6)throw new Error('Expected dialogue from all six group members');\nconst total=cursor+fps*2;
 const output='// Generated from measured per-speaker neural dialogue audio.\nexport const TRIGONOMETRI_DIALOGUE_CUES = '+JSON.stringify(cues,null,2)+' as const;\nexport const TRIGONOMETRI_DURATION_FRAMES = '+total+';\n';
 fs.writeFileSync(path.join(root,'src/generated/trigonometri-timing.ts'),output);
 console.log('Generated and measured '+cues.length+' dialogue clips for six speakers.');
