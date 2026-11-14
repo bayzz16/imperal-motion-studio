@@ -12,7 +12,7 @@ const compiled = ts.transpileModule(source, {
 });
 assert.equal((compiled.diagnostics ?? []).filter(d => d.category === ts.DiagnosticCategory.Error).length, 0);
 const mod = {exports: {}};
-new Function('exports', 'require', 'module', '__filename', '__dirname')(mod.exports, require, mod, file, path.dirname(file));
+new Function('exports', 'require', 'module', '__filename', '__dirname', compiled.outputText)(mod.exports, require, mod, file, path.dirname(file));
 const {lerp, mapRange, getSpringProgress, getCubicBezierProgress, getDampedOscillation} = mod.exports;
 
 test('linear interpolation and range mapping are predictable', () => {
