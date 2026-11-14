@@ -2,7 +2,7 @@ name: Render video
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/three-dimensional-visual-engine]
     paths:
       - '.github/workflows/render-video.yml'
       - 'src/**'
@@ -115,7 +115,7 @@ jobs:
           OUTPUT_FILENAME: ${{ inputs.output_filename || (contains(github.event.head_commit.message, '[render:galaxy]') && 'tata-surya-bima-sakti.mp4') || (contains(github.event.head_commit.message, '[render:kyandra]') && 'kyandra-roast.mp4') || (contains(github.event.head_commit.message, '[render:trigonometri]') && 'praktik-trigonometri.mp4') || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'imperial-sol-teaser.mp4') || 'tunas-dewa.mp4' }}
         run: |
           mkdir -p out
-          npx remotion render src/index.tsx "$COMPOSITION_ID" "out/$OUTPUT_FILENAME" --concurrency="$RENDER_CONCURRENCY" --scale="$RENDER_SCALE" --jpeg-quality="$RENDER_JPEG_QUALITY" --crf="$RENDER_CRF" --log=verbose
+          npx remotion render src/index.tsx "$COMPOSITION_ID" "out/$OUTPUT_FILENAME" --concurrency="$RENDER_CONCURRENCY" --scale="$RENDER_SCALE" --jpeg-quality="$RENDER_JPEG_QUALITY" --crf="$RENDER_CRF" --log=verbose --gl=swangle
 
       - name: Validate rendered MP4 streams and metadata
         env:
