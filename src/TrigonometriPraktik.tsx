@@ -110,7 +110,7 @@ export const TrigonometriPraktik: React.FC = () => {
   const active=activeIndex>=0?cues[activeIndex]:null;
   const scene=active?.scene ?? 'opening';
   const info=scenes[scene as Scene];
-  const speaker=active ? cast.find((c)=>c.name===active.speaker) : undefined;
+  const speaker=active ? {name:'NARATOR',role:'narasi utama',color:'#f2c36e'} : undefined;
   const sceneIndex=sceneOrder.indexOf(scene as Scene);
   const progress=interpolate(frame,[0,TRIGONOMETRI_DURATION_FRAMES],[0,100],clamp);
   const titleOpacity=1;
@@ -129,7 +129,7 @@ export const TrigonometriPraktik: React.FC = () => {
         <div style={{fontSize:23,lineHeight:1.4,color:'rgba(255,248,235,.88)',marginTop:13,maxWidth:850}}>{info.description}</div>
       </div>
       <div style={{position:'absolute',left:0,right:0,bottom:0,height:590,overflow:'hidden'}}>
-        <SchoolScene frame={frame} view={info.view} active={active?.speaker ?? null}/>
+        <SchoolScene frame={frame} view={info.view} active={null}/>
       </div>
       <GeometryPanel view={info.view}/>
       {active && speaker && <div style={{position:'absolute',left:70,right:70,bottom:55,zIndex:6,padding:'20px 28px',borderRadius:20,background:'rgba(9,24,34,.94)',border:'2px solid '+speaker.color,boxShadow:'0 14px 35px rgba(0,0,0,.24)'}}>
