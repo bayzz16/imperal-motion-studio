@@ -62,7 +62,14 @@ const SchoolScene: React.FC<{frame:number;view:string;active:Speaker|null}> = ({
       <rect y="370" width="1200" height="280" fill="url(#grassTrig)"/>
       <path d="M0 445 Q600 410 1200 445" stroke="#d7d0a8" strokeWidth="5" opacity=".55"/>
       <g fill="#e6e4d6"><rect x="40" y="205" width="210" height="145"/><path d="M25 210 L145 130 L265 210Z" fill="#b36d59"/><rect x="75" y="250" width="42" height="55" fill="#78a9b7"/><rect x="165" y="250" width="42" height="55" fill="#78a9b7"/></g>
-      <g fill="#38634e"><circle cx="340" cy="295" r="58"/><rect x="333" y="290" width="14" height="85" fill="#745b42"/></g>
+      <g>
+        <path d="M340 378 C330 345 335 315 326 288 C318 264 330 247 340 230 C350 253 362 270 354 295 C349 324 354 350 350 378Z" fill="#745b42" stroke="#5d4838" strokeWidth="3"/>
+        <path d="M340 300 C310 275 298 258 282 238 M345 294 C369 270 383 253 397 232 M338 270 C327 248 325 230 328 214" fill="none" stroke="#745b42" strokeWidth="9" strokeLinecap="round"/>
+        <path d="M247 250 C236 222 253 194 281 190 C286 159 322 148 344 170 C369 143 411 160 412 192 C443 205 445 242 420 260 C408 292 371 299 347 282 C321 306 280 292 274 270 C260 271 251 263 247 250Z" fill="#477b55" stroke="#315b43" strokeWidth="5" strokeLinejoin="round"/>
+        <path d="M265 237 C270 208 297 193 322 207 C341 178 376 181 389 207 C417 207 430 234 411 254 C387 277 363 264 348 252 C326 278 292 267 286 248Z" fill="#78a96f"/>
+        <path d="M270 236 C286 220 302 218 316 230 M324 202 C339 188 356 190 368 205 M378 222 C394 214 407 224 407 239 M301 255 C317 263 330 260 341 247 M359 250 C374 258 390 253 397 244" fill="none" stroke="#b7d48b" strokeWidth="8" strokeLinecap="round" opacity=".75"/>
+        <path d="M278 205 C292 192 306 189 318 197 M352 180 C369 174 384 183 389 196" fill="none" stroke="#d4e7a0" strokeWidth="5" strokeLinecap="round" opacity=".55"/>
+      </g>
       <path d="M0 515 Q600 485 1200 520" stroke="#b9c49c" strokeWidth="3" fill="none" opacity=".45"/>
       <g>
         <path d="M1080 550 V219" stroke="#e8e7dd" strokeWidth="13" strokeLinecap="round"/>
