@@ -127,6 +127,22 @@ The shared registry is project-agnostic; each composition remains independently 
 
 `buildSceneTimeline` validates scene IDs and frame durations, then calculates each scene's start and exclusive end frame. `SceneSequence` maps an individual placement to Remotion's `Sequence` component. The planner handles sequential placement and gaps; it does not yet implement overlapping layers or transitions. Frame-based spring and easing helpers can drive independent visual layers without coupling the timeline planner to a specific visual style.
 
+## Subtitles and captions
+
+The shared caption system uses the Remotion `Caption` data shape and supports importing existing SRT and WebVTT text. It does not generate transcripts automatically.
+
+```tsx
+import {parseCaptionFile} from './captions/caption-utils';
+import {CaptionTrack} from './captions/CaptionTrack';
+
+const captions = parseCaptionFile(subtitleText, 'vtt'); // or 'srt'
+
+// Inside a Remotion composition:
+<CaptionTrack captions={captions} />
+```
+
+`CaptionTrack` selects cues from the current Remotion frame, stacks overlapping cues, and keeps text inside configurable canvas-relative safe areas. Defaults reserve 8% horizontally and 12% at the bottom. The background, text color, and font size can be adjusted per project. If subtitle text is fetched asynchronously inside a composition, use Remotion's `useDelayRender()` pattern so rendering waits for the file to load.
+
 ## Dialogue voice library
 
 The reusable voice library lives in `src/voice/`. It contains voice-profile metadata and a playback component for prepared recordings. Each composition can use its own generated narration MP3.
