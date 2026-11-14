@@ -1,3 +1,1 @@
-// Defaults keep type checking valid before the neural narration is generated.
-export const TRIGONOMETRI_SCENE_STARTS = [0, 300, 600, 900, 1200, 1500, 1800, 2100] as const;
-export const TRIGONOMETRI_DURATION_FRAMES = 2400;
+// Temporary typed defaults; replaced with measured per-speaker cues during rendering.\nexport const TRIGONOMETRI_DIALOGUE_CUES: {speaker: 'Filza' | 'Falyn' | 'Taysa' | 'Rahma' | 'Miko' | 'Bayu'; scene: 'opening' | 'tools' | 'build' | 'measure' | 'geometry' | 'formula' | 'result' | 'closing'; text: string; file: string; startFrame: number; durationFrames: number}[] = [];\nexport const TRIGONOMETRI_DURATION_FRAMES = 2400;\n
