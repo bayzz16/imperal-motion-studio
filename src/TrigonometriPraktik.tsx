@@ -1,10 +1,10 @@
 import React from 'react';
 import {Audio} from '@remotion/media';
-import {AbsoluteFill, Easing, interpolate, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Easing, interpolate, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {TRIGONOMETRI_DIALOGUE_CUES, TRIGONOMETRI_DURATION_FRAMES} from './generated/trigonometri-timing';
 
 type Speaker = 'Filza' | 'Falyn' | 'Taysa' | 'Rahma' | 'Miko' | 'Bayu';
-type Scene = 'opening' | 'tools' | 'build' | 'measure' | 'geometry' | 'formula' | 'result' | 'closing';
+type Scene = 'opening' | 'tools' | 'build' | 'measure' | 'geometry' | 'formula' | 'result' | 'closing';\ntype DialogueCue = {speaker: Speaker; scene: Scene; text: string; file: string; startFrame: number; durationFrames: number};
 const cast: {name: Speaker; role: string; color: string; female: boolean}[] = [
   {name:'Filza',role:'ceria dan ekspresif',color:'#f2a7bc',female:true},
   {name:'Falyn',role:'tenang dan jelas',color:'#d5b7f4',female:true},
@@ -64,20 +64,20 @@ const SchoolScene: React.FC<{frame:number;view:string;active:Speaker|null}> = ({
       <g fill="#38634e"><circle cx="340" cy="295" r="58"/><rect x="333" y="290" width="14" height="85" fill="#745b42"/></g>
       <path d="M0 515 Q600 485 1200 520" stroke="#b9c49c" strokeWidth="3" fill="none" opacity=".45"/>
       <g>
-        <path d="M1080 410 V82" stroke="#e8e7dd" strokeWidth="13" strokeLinecap="round"/>
-        <path d="M1080 84 L1160 104 L1080 126Z" fill="#d95d55"/>
-        <path d="M1058 410 H1102" stroke="#e7d8b5" strokeWidth="14" strokeLinecap="round"/>
+        <path d="M1080 550 V4" stroke="#e8e7dd" strokeWidth="13" strokeLinecap="round"/>
+        <path d="M1080 6 L1160 26 L1080 48Z" fill="#d95d55"/>
+        <path d="M1058 550 H1102" stroke="#e7d8b5" strokeWidth="14" strokeLinecap="round"/>
       </g>
       {view!=='pov' && <g>{names.map((n,i)=><Student key={n} x={positions[i]} y={520} person={cast[i]} active={active===n} index={i}/>)}</g>}
       {view==='tools' && <g transform="translate(600 395)"><rect x="-130" y="-42" width="260" height="82" rx="15" fill="#fff8e8" stroke="#294653" strokeWidth="4"/><text x="0" y="-8" textAnchor="middle" fontSize="22" fontWeight="700" fill="#263f4a">METERAN • BUSUR</text><text x="0" y="22" textAnchor="middle" fontSize="19" fill="#263f4a">SEDOTAN • BENANG</text></g>}
       {view==='close' && <g transform="translate(650 365)"><path d="M-110 0 H110" stroke="#263d4a" strokeWidth="12" strokeLinecap="round"/><path d="M0 -5 V90" stroke="#263d4a" strokeWidth="3"/><path d="M0 90 L-10 75 H10Z" fill="#d95d55"/><path d="M-110 0 A110 110 0 0 1 0 -110" stroke="#f4c56a" strokeWidth="5" fill="none"/><text x="20" y="-48" fontSize="24" fill="#203946" fontWeight="700">KLINOMETER</text></g>}
       {view==='pov' && <g>
-        <path d="M150 480 L1080 82" stroke="#f8d67d" strokeWidth="6" strokeDasharray="16 12"/>
-        <path d="M150 480 H1080" stroke="#fff8e8" strokeWidth="3" strokeDasharray="12 10" opacity=".8"/>
-        <path d="M150 480 A95 95 0 0 0 235 442" stroke="#f8d67d" strokeWidth="6" fill="none"/>
-        <rect x="235" y="425" width="105" height="48" rx="12" fill="#183544"/><text x="287" y="457" textAnchor="middle" fontSize="27" fill="white" fontWeight="700">35°</text>
+        <path d="M400 480 L1080 4" stroke="#f8d67d" strokeWidth="6" strokeDasharray="16 12"/>
+        <path d="M400 480 H1080" stroke="#fff8e8" strokeWidth="3" strokeDasharray="12 10" opacity=".8"/>
+        <path d="M400 480 A95 95 0 0 0 478 440" stroke="#f8d67d" strokeWidth="6" fill="none"/>
+        <rect x="478" y="418" width="105" height="48" rx="12" fill="#183544"/><text x="530" y="450" textAnchor="middle" fontSize="27" fill="white" fontWeight="700">35°</text>
         <rect x="560" y="490" width="180" height="45" rx="12" fill="#183544"/><text x="650" y="520" textAnchor="middle" fontSize="25" fill="white" fontWeight="700">8 meter</text>
-        <g transform="translate(150 480)"><circle cy="-22" r="18" fill="#d9a889"/><path d="M-22 0 Q0 -12 22 0 L30 90 H-30Z" fill="#8bbbe0"/><path d="M-15 88 L-20 125 M15 88 L20 125" stroke="#263b48" strokeWidth="12"/></g>
+        <g transform="translate(400 480)"><circle cy="-22" r="18" fill="#d9a889"/><path d="M-22 0 Q0 -12 22 0 L30 90 H-30Z" fill="#8bbbe0"/><path d="M-15 88 L-20 125 M15 88 L20 125" stroke="#263b48" strokeWidth="12"/></g>
       </g>}
     </g>
   </svg>;
@@ -88,13 +88,13 @@ const GeometryPanel: React.FC<{view:string}> = ({view}) => {
   return <div style={{position:'absolute',right:75,top:300,width:690,height:460,padding:28,borderRadius:24,background:'rgba(14,35,48,.94)',border:'2px solid rgba(255,255,255,.25)',boxShadow:'0 24px 60px rgba(0,0,0,.25)'}}>
     <div style={{fontSize:20,letterSpacing:3,color:'#f2c36e',fontWeight:800,marginBottom:12}}>MODEL MATEMATIKA</div>
     <svg viewBox="0 0 620 300" width="100%" height="270">
-      <path d="M65 235 H545 V0" stroke="#f7f3e8" strokeWidth="4" fill="none"/>
-      <path d="M65 235 L545 0" stroke="#f2c36e" strokeWidth="5" fill="none"/>
+      <path d="M65 235 H400 V0" stroke="#f7f3e8" strokeWidth="4" fill="none"/>
+      <path d="M65 235 L400 0" stroke="#f2c36e" strokeWidth="5" fill="none"/>
       <path d="M65 235 A75 75 0 0 0 130 201" stroke="#f2c36e" strokeWidth="4" fill="none"/>
-      <path d="M515 235 V205 H545" stroke="#f7f3e8" strokeWidth="3" fill="none"/>
+      <path d="M370 235 V205 H400" stroke="#f7f3e8" strokeWidth="3" fill="none"/>
       <text x="92" y="205" fill="#f2c36e" fontSize="23" fontWeight="700">35°</text>
-      <text x="300" y="270" fill="#fff" fontSize="23" textAnchor="middle">8 m</text>
-      <text x="560" y="115" fill="#fff" fontSize="22">h − 1,5 m</text>
+      <text x="230" y="270" fill="#fff" fontSize="23" textAnchor="middle">8 m</text>
+      <text x="415" y="115" fill="#fff" fontSize="22">h − 1,5 m</text>
       <text x="310" y="95" fill="#f2c36e" fontSize="20" textAnchor="middle">garis pandang</text>
     </svg>
     <div style={{display:'flex',justifyContent:'space-between',fontSize:18,color:'#dce8e7'}}><span>Jarak mendatar: 8 m</span><span>Tinggi mata: 1,5 m</span></div>
@@ -104,7 +104,7 @@ const GeometryPanel: React.FC<{view:string}> = ({view}) => {
 
 export const TrigonometriPraktik: React.FC = () => {
   const frame=useCurrentFrame();
-  const cues=TRIGONOMETRI_DIALOGUE_CUES;
+  const cues=TRIGONOMETRI_DIALOGUE_CUES as readonly DialogueCue[];
   const activeIndex=cues.reduce((found,cue,index)=>frame>=cue.startFrame?index:found,-1);
   const active=activeIndex>=0?cues[activeIndex]:null;
   const scene=active?.scene ?? 'opening';
@@ -112,11 +112,11 @@ export const TrigonometriPraktik: React.FC = () => {
   const speaker=active ? cast.find((c)=>c.name===active.speaker) : undefined;
   const sceneIndex=sceneOrder.indexOf(scene as Scene);
   const progress=interpolate(frame,[0,TRIGONOMETRI_DURATION_FRAMES],[0,100],clamp);
-  const titleOpacity=interpolate(frame%240,[0,15,220,240],[0,1,1,0],clamp);
+  const titleOpacity=1;
   const music=interpolate(frame,[0,75,TRIGONOMETRI_DURATION_FRAMES-90,TRIGONOMETRI_DURATION_FRAMES],[0,.1,.1,0],clamp);
   return <>
     <Audio src={staticFile('audio/music-bed.wav')} volume={music}/>
-    {cues.map((cue,index)=><Audio key={cue.file} src={staticFile(cue.file)} from={cue.startFrame} volume={1}/>)}
+    {cues.map((cue)=><Sequence key={cue.file} from={cue.startFrame}><Audio src={staticFile(cue.file)} volume={1}/></Sequence>)}
     <AbsoluteFill style={{background:'#142b3a',color:'#fff8eb',fontFamily:'Arial,sans-serif',overflow:'hidden'}}>
       <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,#17384b,#34596a 55%,#172f3a)'}}/>
       <div style={{position:'absolute',top:35,left:70,right:70,display:'flex',justifyContent:'space-between',fontSize:17,letterSpacing:3,color:'#e3eee8',zIndex:5}}>
