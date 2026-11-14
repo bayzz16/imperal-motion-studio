@@ -99,6 +99,8 @@ const Landscape: React.FC<{frame: number; sceneIndex: number; light: string}> = 
         </linearGradient>
         <filter id="softGlow"><feGaussianBlur stdDeviation="28" /></filter>
       </defs>
+      <rect x="0" y="0" width="1080" height="1920" fill={SCENES[sceneIndex].sky} />
+      <rect x="0" y="0" width="1080" height="1920" fill="url(#horizon)" opacity="0.16" />
       <circle cx={760 - sceneIndex * 26} cy="690" r="330" fill="url(#sun)" opacity={glow} />
       <circle cx={760 - sceneIndex * 26} cy="690" r="84" fill={light} opacity="0.62" filter="url(#softGlow)" />
       <g opacity="0.74">
@@ -289,7 +291,7 @@ export const ImperialSolTeaser: React.FC = () => {
       <Audio src={staticFile('audio/whoosh.wav')} from={IMPERIAL_SOL_SCENE_STARTS[7]} volume={0.12} />
       <Audio src={staticFile('audio/imperial-sol-narration.mp3')} volume={1} />
       <AbsoluteFill style={{backgroundColor: '#101b2b', color: '#fff8ed', overflow: 'hidden', fontFamily: 'Georgia, serif'}}>
-        <AbsoluteFill style={{background: `linear-gradient(180deg, ${scene.sky} 0%, #263849 54%, #0b171e 100%)`}} />
+        <AbsoluteFill style={{background: 'linear-gradient(180deg, #101b2b 0%, #263849 54%, #0b171e 100%)'}} />
         <div style={{position: 'absolute', inset: 0, transform: `scale(${camera}) translate3d(${interpolate(frame, [0, IMPERIAL_SOL_DURATION_FRAMES], [0, -110], clamp)}px, ${Math.sin(frame / 100) * 10}px, 0)`, transformOrigin: '50% 58%'}}>
           {sceneIndex > 0 && (
             <div style={{position: 'absolute', inset: 0, opacity: 1 - transitionProgress}}>
