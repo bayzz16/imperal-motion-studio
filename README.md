@@ -20,6 +20,7 @@ All projects are separate Remotion compositions registered in `src/projects/regi
 - Reusable spring response, cubic-bezier easing, range mapping, and damped oscillation primitives in `src/motion/physics.ts`.
 - Camera movement regression tests covering all presets, deterministic output, frame clamping, and invalid inputs.
 - Motion-physics tests covering spring overshoot, easing endpoints, range mapping, damping, and invalid parameters.
+- Adaptive cinematic render profiles that select output scale and render concurrency from available RAM and CPU resources.
 - Reusable animated celestial-body visuals (axial rotation, surface shading, atmosphere, clouds, and ring layers) in `src/visual/`.
 - Motion regression tests plus MP4 validation for video/audio streams, duration, and dimensions.
 - GitHub Actions rendering to MP4, with downloadable artifacts retained for 14 days.
@@ -32,6 +33,14 @@ Requires Node.js 22+.
 npm install
 npm run studio
 ```
+
+## Adaptive cinematic rendering
+
+GitHub Actions selects a conservative render profile from the runner's available memory and CPU count. The profile adjusts Remotion output scale and concurrency while keeping the composition frame rate unchanged. The renderer still processes the full composition timeline unless a frame range is explicitly requested.
+
+Profiles range from standard (1x) through balanced (1.25x), high (1.5x), and ultra (2x). Scaling increases output dimensions and can improve vector/text rasterization detail; it does not create new source-image detail, and it increases render cost. The workflow also uses H.264 CRF 18 and a high JPEG frame quality setting.
+
+The profile resolver is covered by unit tests in `scripts/render-profile.test.cjs`. Its thresholds are resource heuristics, not a guarantee that every render will fit available memory.
 
 ## Validate changes
 
