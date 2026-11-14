@@ -32,7 +32,7 @@ concurrency:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -55,6 +55,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Validate build script syntax
+        run: find scripts -type f -name '*.cjs' -print0 | xargs -0 -n1 node --check
 
       - name: TypeScript validation
         run: npm run typecheck
