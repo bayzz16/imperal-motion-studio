@@ -39,15 +39,18 @@ const Roots: React.FC<{growth: number}> = ({growth}) => {
 
 const GrowingTree: React.FC<{growth: number; frame: number}> = ({growth, frame}) => {
   const g = Math.max(0.015, Math.min(1, growth));
-  const height = 85 + g * 600;
+  const shootProgress = interpolate(g, [0.08, 0.28], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const height = 10 + shootProgress * (90 + g * 400);
   const trunkWidth = 4 + g * 42;
-  const crownScale = interpolate(g, [0.18, 1], [0.18, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const trunkOpacity = interpolate(g, [0.06, 0.16], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const crownScale = interpolate(g, [0.18, 1], [0.18, 0.84], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const sway = Math.sin(frame / 48) * (0.5 + g * 1.5);
   const branchOpacity = interpolate(g, [0.24, 0.5], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const crownOpacity = interpolate(g, [0.3, 0.62], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <g transform="translate(540 1280)">
       <Roots growth={g}/>
+      <g opacity={trunkOpacity}>
       <path d={`M-${trunkWidth * 0.55} 0 C-${trunkWidth * 0.9} -${height * 0.28} -${trunkWidth * 0.35} -${height * 0.68} -${trunkWidth * 0.18} -${height} Q0 -${height + 26 * g} ${trunkWidth * 0.2} -${height} C${trunkWidth * 0.32} -${height * 0.62} ${trunkWidth * 0.82} -${height * 0.25} ${trunkWidth * 0.58} 0Z`}
         fill="#81583d" stroke="#4c382d" strokeWidth="4"/>
       <path d={`M0 -${height * 0.12} Q-${height * 0.04} -${height * 0.45} -${height * 0.34} -${height * 0.67} M0 -${height * 0.22} Q${height * 0.04} -${height * 0.5} ${height * 0.34} -${height * 0.72} M-2 -${height * 0.55} Q-${height * 0.12} -${height * 0.7} -${height * 0.2} -${height * 0.83} M5 -${height * 0.62} Q${height * 0.14} -${height * 0.77} ${height * 0.23} -${height * 0.88}`}
@@ -72,6 +75,7 @@ const GrowingTree: React.FC<{growth: number; frame: number}> = ({growth, frame})
           <Leaf x={75} y={48} scale={1.05} rotate={18} color="#9ac575"/>
           <Leaf x={165} y={35} scale={0.95} rotate={45} color="#6f9f54"/>
         </g>
+      </g>
       </g>
     </g>
   );
@@ -119,6 +123,10 @@ export const TunasPohon: React.FC = () => {
           <path d="M0 1270 Q250 1240 520 1270 T1080 1255 L1080 1310 Q760 1330 540 1310 Q250 1335 0 1310Z" fill="url(#grass)"/>
           <g opacity="0.32" fill="#d5b18a">
             {Array.from({length: 44}, (_, i) => <circle key={i} cx={(i * 83) % 1080} cy={1350 + ((i * 47) % 520)} r={2 + (i % 4)} />)}
+          </g>
+          <g opacity={interpolate(progress, [0.01, 0.13], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}>
+            <ellipse cx="540" cy="1288" rx="23" ry="15" fill="#9b6941" stroke="#68452f" strokeWidth="4"/>
+            <path d="M529 1286 Q540 1276 552 1287" fill="none" stroke="#d3a36b" strokeWidth="3" strokeLinecap="round"/>
           </g>
           <GrowingTree growth={progress} frame={frame}/>
           <g opacity={rain} stroke="#e9f2f1" strokeWidth="4" strokeLinecap="round">
