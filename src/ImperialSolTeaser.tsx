@@ -1,5 +1,6 @@
 import React from 'react';
 import {Audio} from '@remotion/media';
+import {IMPERIAL_SOL_SCENE_STARTS, IMPERIAL_SOL_DURATION_FRAMES} from './generated/imperial-sol-timing';
 import {
   AbsoluteFill,
   Easing,
@@ -8,7 +9,6 @@ import {
   useCurrentFrame,
 } from 'remotion';
 
-const SCENE_FRAMES = 270;
 const SCENES = [
   {tag: 'SEBUAH DUNIA BARU', title: 'Ada dunia yang belum\nmengenal namamu.', sub: 'Dan setiap kisah besar selalu dimulai dari satu langkah.', sky: '#111b2c', light: '#e8a66d'},
   {tag: 'TITIK AWAL', title: 'Setiap kisah punya\ntitik awal.', sub: 'Sebuah cakrawala. Sebuah kesempatan. Sebuah cerita yang belum ditulis.', sky: '#26374b', light: '#f1bd7d'},
@@ -153,14 +153,17 @@ const Landscape: React.FC<{frame: number; sceneIndex: number; light: string}> = 
 
 export const ImperialSolTeaser: React.FC = () => {
   const frame = useCurrentFrame();
-  const sceneIndex = Math.min(SCENES.length - 1, Math.floor(frame / SCENE_FRAMES));
-  const local = frame - sceneIndex * SCENE_FRAMES;
+  const sceneIndex = Math.max(0, IMPERIAL_SOL_SCENE_STARTS.reduce((active, start, index) => frame >= start ? index : active, 0));
+  const sceneStart = IMPERIAL_SOL_SCENE_STARTS[sceneIndex];
+  const nextSceneStart = IMPERIAL_SOL_SCENE_STARTS[sceneIndex + 1] ?? IMPERIAL_SOL_DURATION_FRAMES;
+  const local = frame - sceneStart;
+  const sceneLength = Math.max(1, nextSceneStart - sceneStart);
   const scene = SCENES[sceneIndex];
-  const fade = interpolate(local, [0, 24, SCENE_FRAMES - 24, SCENE_FRAMES], [0, 1, 1, 0], clamp);
+  const fade = interpolate(local, [0, 22], [0, 1], {...clamp, easing: Easing.out(Easing.quad)});
   const titleIn = interpolate(local, [18, 58], [36, 0], { ...clamp, easing: Easing.out(Easing.cubic) });
-  const camera = interpolate(local, [0, SCENE_FRAMES], [1.04, 1.16], clamp);
-  const reveal = interpolate(local, [24, 85], [0, 1], clamp);
-  const music = interpolate(frame, [0, 90, 1850, 2159], [0, 0.18, 0.22, 0.08], clamp);
+  const camera = interpolate(frame, [0, IMPERIAL_SOL_DURATION_FRAMES], [1.035, 1.19], clamp);
+  const reveal = interpolate(local, [0, 42], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+  const music = interpolate(frame, [0, 90, IMPERIAL_SOL_DURATION_FRAMES - 150, IMPERIAL_SOL_DURATION_FRAMES], [0, 0.18, 0.2, 0], clamp);
 
   return (
     <>
@@ -170,9 +173,9 @@ export const ImperialSolTeaser: React.FC = () => {
       <Audio src={staticFile('audio/soft-impact.wav')} from={1320} volume={0.14} />
       <Audio src={staticFile('audio/whoosh.wav')} from={1740} volume={0.16} />
       <Audio src={staticFile('audio/imperial-sol-narration.mp3')} volume={1} />
-      <AbsoluteFill style={{backgroundColor: scene.sky, color: '#fff8ed', overflow: 'hidden', fontFamily: 'Georgia, serif'}}>
-        <AbsoluteFill style={{background: `linear-gradient(180deg, ${scene.sky} 0%, #263849 54%, #0b171e 100%)`}} />
-        <div style={{position: 'absolute', inset: 0, transform: `scale(${camera}) translateY(${Math.sin(frame / 100) * 10}px)`, transformOrigin: '50% 58%'}}>
+      <AbsoluteFill style={{backgroundColor: '#101b2b', color: '#fff8ed', overflow: 'hidden', fontFamily: 'Georgia, serif'}}>
+        <AbsoluteFill style={{background: 'linear-gradient(180deg, #101b2b 0%, #263849 54%, #0b171e 100%)'}} />
+        <div style={{position: 'absolute', inset: 0, transform: `scale(${camera}) translate3d(${interpolate(frame, [0, IMPERIAL_SOL_DURATION_FRAMES], [0, -72], clamp)}px, ${Math.sin(frame / 100) * 10}px, 0)`, transformOrigin: '50% 58%'}}>
           <Landscape frame={frame} sceneIndex={sceneIndex} light={scene.light} />
         </div>
         <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(5,12,22,.48) 0%, transparent 34%, transparent 60%, rgba(3,10,16,.68) 100%)'}} />
@@ -197,14 +200,13 @@ export const ImperialSolTeaser: React.FC = () => {
         )}
         <div style={{position: 'absolute', bottom: 82, left: 74, right: 74, opacity: 0.72}}>
           <div style={{height: 2, background: 'rgba(255,255,255,.2)'}}>
-            <div style={{height: 2, width: `${(frame / 2159) * 100}%`, background: scene.light}} />
+            <div style={{height: 2, width: `${(frame / Math.max(1, IMPERIAL_SOL_DURATION_FRAMES - 1)) * 100}%`, background: scene.light}} />
           </div>
           <div style={{display: 'flex', justifyContent: 'space-between', marginTop: 15, fontFamily: 'Arial, sans-serif', fontSize: 13, letterSpacing: 4}}>
             <span>THE STORY IS WAITING</span>
             <span>IMPERIAL × SOL</span>
           </div>
         </div>
-        <AbsoluteFill style={{backgroundColor: '#050a10', opacity: interpolate(local, [0, 22], [1, 0], clamp), pointerEvents: 'none'}} />
       </AbsoluteFill>
     </>
   );
