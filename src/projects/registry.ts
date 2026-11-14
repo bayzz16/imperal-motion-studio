@@ -1,4 +1,5 @@
 import type React from 'react';
+import {ImperialSolTeaser} from '../ImperialSolTeaser';
 import {TunasDewa} from '../TunasDewa';
 import {TunasKecil} from '../TunasKecil';
 
@@ -28,6 +29,14 @@ export const VIDEO_PROJECTS: VideoProjectDefinition[] = [
     id: 'TunasDewa',
     component: TunasDewa,
     durationInFrames: 2700,
+    fps: 30,
+    width: 1080,
+    height: 1920,
+  },
+  {
+    id: 'ImperialSolTeaser',
+    component: ImperialSolTeaser,
+    durationInFrames: 2160,
     fps: 30,
     width: 1080,
     height: 1920,

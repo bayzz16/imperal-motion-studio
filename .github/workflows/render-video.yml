@@ -64,8 +64,8 @@ jobs:
 
       - name: Validate render inputs
         env:
-          COMPOSITION_ID: ${{ inputs.composition_id || 'TunasDewa' }}
-          OUTPUT_FILENAME: ${{ inputs.output_filename || 'tunas-dewa.mp4' }}
+          COMPOSITION_ID: ${{ inputs.composition_id || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'ImperialSolTeaser' || 'TunasDewa') }}
+          OUTPUT_FILENAME: ${{ inputs.output_filename || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'imperial-sol-teaser.mp4' || 'tunas-dewa.mp4') }}
         run: |
           if [[ ! "$COMPOSITION_ID" =~ ^[A-Za-z0-9_-]+$ ]]; then
             echo "Invalid composition ID"
@@ -79,17 +79,23 @@ jobs:
       - name: Generate original music and sound effects
         run: node scripts/generate-audio.cjs
 
-      - name: Generate natural Indonesian neural narration
+      - name: Generate composition-specific Indonesian neural narration
         env:
+          COMPOSITION_ID: ${{ inputs.composition_id || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'ImperialSolTeaser' || 'TunasDewa') }}
           TTS_VOICE: id-ID-ArdiNeural
           TTS_RATE: -4%
           TTS_PITCH: -2Hz
-        run: node scripts/generate-tunas-dewa-voice.cjs
+        run: |
+          if [ "$COMPOSITION_ID" = "ImperialSolTeaser" ]; then
+            node scripts/generate-imperial-sol-voice.cjs
+          elif [ "$COMPOSITION_ID" = "TunasDewa" ]; then
+            node scripts/generate-tunas-dewa-voice.cjs
+          fi
 
       - name: Render MP4
         env:
-          COMPOSITION_ID: ${{ inputs.composition_id || 'TunasDewa' }}
-          OUTPUT_FILENAME: ${{ inputs.output_filename || 'tunas-dewa.mp4' }}
+          COMPOSITION_ID: ${{ inputs.composition_id || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'ImperialSolTeaser' || 'TunasDewa') }}
+          OUTPUT_FILENAME: ${{ inputs.output_filename || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'imperial-sol-teaser.mp4' || 'tunas-dewa.mp4') }}
         run: |
           mkdir -p out
           npx remotion render src/index.tsx "$COMPOSITION_ID" "out/$OUTPUT_FILENAME" --concurrency=2 --log=verbose
