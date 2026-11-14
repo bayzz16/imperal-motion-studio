@@ -121,7 +121,7 @@ export const TrigonometriPraktik: React.FC = () => {
     <AbsoluteFill style={{background:'#142b3a',color:'#fff8eb',fontFamily:'Arial,sans-serif',overflow:'hidden'}}>
       <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,#17384b,#34596a 55%,#172f3a)'}}/>
       <div style={{position:'absolute',top:35,left:70,right:70,display:'flex',justifyContent:'space-between',fontSize:17,letterSpacing:3,color:'#e3eee8',zIndex:5}}>
-        <span>MATEMATIKA • KELAS X</span><span>KELOMPOK 6 ANGGOTA</span>
+        <span>SMAN 1 SOKO • MATEMATIKA KELAS X</span><span>KELOMPOK 6 ANGGOTA</span>
       </div>
       <div style={{position:'absolute',top:95,left:65,width:info.view==='diagram'||info.view==='formula'||info.view==='result'?850:1780,zIndex:3,opacity:titleOpacity}}>
         <div style={{fontSize:19,letterSpacing:5,fontWeight:800,color:'#f2c36e',marginBottom:12}}>{info.label} • {String(sceneIndex+1).padStart(2,'0')}/08</div>
