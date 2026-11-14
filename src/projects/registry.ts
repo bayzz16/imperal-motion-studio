@@ -57,6 +57,14 @@ export const VIDEO_PROJECTS: VideoProjectDefinition[] = [
     height: 1920,
   },
   {
+    id: 'GalaxyEducation',
+    component: GalaxyEducation,
+    durationInFrames: GALAXY_DURATION_FRAMES,
+    fps: 30,
+    width: 1080,
+    height: 1920,
+  },
+  {
     id: 'ImperialSolTeaser',
     component: ImperialSolTeaser,
     durationInFrames: IMPERIAL_SOL_DURATION_FRAMES,
