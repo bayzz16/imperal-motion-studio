@@ -62,6 +62,9 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      - name: Discover and validate registered compositions
+        run: npm run compositions
+
       - name: Validate render inputs
         env:
           COMPOSITION_ID: ${{ inputs.composition_id || (contains(github.event.head_commit.message, '[render:galaxy]') && 'GalaxyEducation') || (contains(github.event.head_commit.message, '[render:kyandra]') && 'KyandraRoast') || (contains(github.event.head_commit.message, '[render:trigonometri]') && 'TrigonometriPraktik') || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'ImperialSolTeaser') || 'TunasDewa' }}
@@ -110,6 +113,11 @@ jobs:
         run: |
           mkdir -p out
           npx remotion render src/index.tsx "$COMPOSITION_ID" "out/$OUTPUT_FILENAME" --concurrency=2 --log=verbose
+
+      - name: Validate rendered MP4 streams and metadata
+        env:
+          OUTPUT_FILENAME: ${{ inputs.output_filename || (contains(github.event.head_commit.message, '[render:galaxy]') && 'tata-surya-bima-sakti.mp4') || (contains(github.event.head_commit.message, '[render:kyandra]') && 'kyandra-roast.mp4') || (contains(github.event.head_commit.message, '[render:trigonometri]') && 'praktik-trigonometri.mp4') || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'imperial-sol-teaser.mp4') || 'tunas-dewa.mp4' }}
+        run: node scripts/validate-render.cjs
 
       - name: Upload MP4 artifact
         uses: actions/upload-artifact@v4
