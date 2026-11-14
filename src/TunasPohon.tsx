@@ -9,7 +9,7 @@ const SCENE_FRAMES = 450;
 const scenes = [
   {tag: 'AWAL KEHIDUPAN', title: 'Semuanya bermula\ndari sebuah biji.', subtitle: 'Kecil, tenang, dan menyimpan kemungkinan.'},
   {tag: 'PERKECAMBAHAN', title: 'Akar tumbuh ke bawah.\nTunas mencari cahaya.', subtitle: 'Air mengaktifkan embrio di dalam biji.'},
-  {tag: 'KECambahAN', title: 'Dua daun pertama\nmenyambut matahari.', subtitle: 'Daun sejati mulai berkembang dan membuat makanan melalui fotosintesis.'},
+  {tag: 'KECAMBAHAN', title: 'Dua daun pertama\nmenyambut matahari.', subtitle: 'Daun sejati mulai berkembang dan membuat makanan melalui fotosintesis.'},
   {tag: 'POHON MUDA', title: 'Batang menguat.\nAkar menyebar.', subtitle: 'Sedikit demi sedikit, tanaman membangun bentuk pohonnya.'},
   {tag: 'BERTUMBUH', title: 'Cabang terbuka.\nRimbun mulai terbentuk.', subtitle: 'Tahun demi tahun, batang menebal dan tajuk semakin luas.'},
   {tag: 'POHON DEWASA', title: 'Dari tunas kecil,\nmenjadi pohon dewasa.', subtitle: 'Kini ia tumbuh kokoh, memberi naungan dan menjadi bagian dari kehidupan.'},
@@ -93,7 +93,6 @@ export const TunasPohon: React.FC = () => {
       <Audio src={staticFile('audio/music-bed.wav')} volume={musicVolume}/>
       <Audio src={staticFile('audio/soft-chime.wav')} from={0} volume={0.1}/>
       <Audio src={staticFile('audio/seedling.wav')} from={360} volume={0.13}/>
-      <Audio src={staticFile('audio/rain.wav')} from={1250} volume={rain * 0.18}/>
       <Audio src={staticFile('audio/soft-chime.wav')} from={2200} volume={0.14}/>
       <Audio src={staticFile('audio/tunas-pohon-narration.mp3')} volume={1}/>
       <AbsoluteFill style={{background: 'linear-gradient(180deg,#b9d8e4 0%,#e2e8d4 42%,#c5d3a7 100%)', color: '#21352a', fontFamily: 'Arial, sans-serif', overflow: 'hidden'}}>

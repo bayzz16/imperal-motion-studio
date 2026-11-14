@@ -29,6 +29,10 @@ All projects are separate Remotion compositions registered in `src/projects/regi
 - GitHub Actions rendering to MP4, with downloadable artifacts retained for 14 days.
 
 
+## Botanical test video references
+
+The new `TunasPohon` composition has a source-backed visual specification in [docs/reference-sheets/tunas-pohon.md](docs/reference-sheets/tunas-pohon.md). It uses authoritative botanical descriptions for germination and tree development, plus visual observations for early seedling form. The animation is a generic broadleaf tree, not a named species.
+
 ## Reference-first animation workflow
 
 Every new animation must pass a **reference-first** stage before illustration or motion work begins:

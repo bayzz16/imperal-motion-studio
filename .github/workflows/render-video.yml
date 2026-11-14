@@ -101,6 +101,8 @@ jobs:
             node scripts/generate-imperial-sol-voice.cjs
           elif [ "$COMPOSITION_ID" = "TunasDewa" ]; then
             node scripts/generate-tunas-dewa-voice.cjs
+          elif [ "$COMPOSITION_ID" = "TunasPohon" ]; then
+            node scripts/generate-tunas-pohon-voice.cjs
           elif [ "$COMPOSITION_ID" = "TrigonometriPraktik" ]; then
             node scripts/generate-trigonometri-voice.cjs
           elif [ "$COMPOSITION_ID" = "GalaxyEducation" ]; then
