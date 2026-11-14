@@ -27,6 +27,22 @@ All projects are separate Remotion compositions registered in `src/projects/regi
 - Motion regression tests plus MP4 validation for video/audio streams, duration, dimensions, frame rate, A/V drift, and full-stream decode diagnostics.
 - GitHub Actions rendering to MP4, with downloadable artifacts retained for 14 days.
 
+
+## Reference-first animation workflow
+
+Every new animation must pass a **reference-first** stage before illustration or motion work begins:
+
+1. **Understand the request** — identify the exact subject/type, setting, action, style, camera view, and required facts. Clarify ambiguity that changes the subject's identity.
+2. **Research references** — collect several relevant visual references. Prefer authoritative scientific, educational, museum, or domain-specific sources for factual subjects. Inspect the actual images where available; a search-result title alone is not image inspection.
+3. **Study the details** — document silhouette, proportions, structure/anatomy, color variation, materials, texture, part relationships, and realistic movement.
+4. **Write a visual specification** — list defining details that must remain recognizable, motion constraints, framing notes, source links, and uncertainties.
+5. **Create a keyframe or animatic** — compare it with the references before spending time on full animation.
+6. **Animate and review** — preserve subject identity across shots and aspect ratios; inspect representative frames and correct visible mismatches before final rendering.
+
+For example, a requested flower must be identified by type before it is drawn. The system should study its actual petal arrangement, center, stem, leaves, colors, and movement rather than using a generic flower symbol. Reference research informs an original design; it must not copy a protected character, artwork, or unlicensed asset.
+
+**Honesty gate:** if reference browsing or image inspection is unavailable, the production notes must say so. Never invent sources or claim that references were inspected when they were not. A final render should not be marked creatively approved until the reference comparison has been reviewed.
+
 ## Run locally
 
 Requires Node.js 22+.
