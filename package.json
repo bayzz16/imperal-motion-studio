@@ -9,7 +9,9 @@
     "render:tunas-dewa": "node scripts/generate-audio.cjs && node scripts/generate-tunas-dewa-voice.cjs && remotion render src/index.tsx TunasDewa out/tunas-dewa.mp4",
     "compositions": "remotion compositions src/index.tsx",
     "typecheck": "tsc --noEmit",
-    "test": "node --test scripts/*.test.cjs"
+    "test": "node --test scripts/*.test.cjs",
+    "validate:render": "node scripts/validate-render.cjs",
+    "check": "npm run typecheck && npm test && npm run compositions"
   },
   "dependencies": {
     "@remotion/cli": "4.0.543",
