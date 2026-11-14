@@ -1,6 +1,7 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const {spawnSync}=require('node:child_process');
+const ts=require('typescript');
 
 // Indonesian neural TTS currently exposes two standard id-ID identities; per-character rate and pitch create six distinguishable role profiles.\nconst dialogue=[
  {speaker:'Filza',scene:'opening',text:'Halo semuanya! Kami dari kelompok kelas sepuluh E dua.'},
@@ -57,6 +58,9 @@ for(let i=0;i<dialogue.length;i++){
 }
 if(new Set(cues.map((cue)=>cue.speaker)).size!==6)throw new Error('Expected dialogue from all six group members');\nconst total=cursor+fps*2;
 const output='// Generated from measured per-speaker neural dialogue audio.\nexport const TRIGONOMETRI_DIALOGUE_CUES = '+JSON.stringify(cues,null,2)+' as const;\nexport const TRIGONOMETRI_DURATION_FRAMES = '+total+';\n';
+const compiled=ts.transpileModule(output,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2020},reportDiagnostics:true});
+const errors=(compiled.diagnostics||[]).filter((diagnostic)=>diagnostic.category===ts.DiagnosticCategory.Error);
+if(errors.length)throw new Error('Generated timing module failed TypeScript validation: '+errors.map((diagnostic)=>ts.flattenDiagnosticMessageText(diagnostic.messageText,' ')).join('; '));
 fs.writeFileSync(path.join(root,'src/generated/trigonometri-timing.ts'),output);
 console.log('Generated and measured '+cues.length+' dialogue clips for six speakers.');
 console.log('Distinct character profiles: '+Object.keys(profiles).join(', '));
