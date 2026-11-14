@@ -64,20 +64,20 @@ const SchoolScene: React.FC<{frame:number;view:string;active:Speaker|null}> = ({
       <g fill="#38634e"><circle cx="340" cy="295" r="58"/><rect x="333" y="290" width="14" height="85" fill="#745b42"/></g>
       <path d="M0 515 Q600 485 1200 520" stroke="#b9c49c" strokeWidth="3" fill="none" opacity=".45"/>
       <g>
-        <path d="M1080 550 V4" stroke="#e8e7dd" strokeWidth="13" strokeLinecap="round"/>
-        <path d="M1080 6 L1160 26 L1080 48Z" fill="#d95d55"/>
+        <path d="M1080 550 V219" stroke="#e8e7dd" strokeWidth="13" strokeLinecap="round"/>
+        <path d="M1080 221 L1160 241 L1080 263Z" fill="#d95d55"/>
         <path d="M1058 550 H1102" stroke="#e7d8b5" strokeWidth="14" strokeLinecap="round"/>
       </g>
       {view!=='pov' && <g>{names.map((n,i)=><Student key={n} x={positions[i]} y={520} person={cast[i]} active={active===n} index={i}/>)}</g>}
       {view==='tools' && <g transform="translate(600 395)"><rect x="-130" y="-42" width="260" height="82" rx="15" fill="#fff8e8" stroke="#294653" strokeWidth="4"/><text x="0" y="-8" textAnchor="middle" fontSize="22" fontWeight="700" fill="#263f4a">METERAN • BUSUR</text><text x="0" y="22" textAnchor="middle" fontSize="19" fill="#263f4a">SEDOTAN • BENANG</text></g>}
       {view==='close' && <g transform="translate(650 365)"><path d="M-110 0 H110" stroke="#263d4a" strokeWidth="12" strokeLinecap="round"/><path d="M0 -5 V90" stroke="#263d4a" strokeWidth="3"/><path d="M0 90 L-10 75 H10Z" fill="#d95d55"/><path d="M-110 0 A110 110 0 0 1 0 -110" stroke="#f4c56a" strokeWidth="5" fill="none"/><text x="20" y="-48" fontSize="24" fill="#203946" fontWeight="700">KLINOMETER</text></g>}
       {view==='pov' && <g>
-        <path d="M400 480 L1080 4" stroke="#f8d67d" strokeWidth="6" strokeDasharray="16 12"/>
-        <path d="M400 480 H1080" stroke="#fff8e8" strokeWidth="3" strokeDasharray="12 10" opacity=".8"/>
-        <path d="M400 480 A95 95 0 0 0 478 440" stroke="#f8d67d" strokeWidth="6" fill="none"/>
-        <rect x="478" y="418" width="105" height="48" rx="12" fill="#183544"/><text x="530" y="450" textAnchor="middle" fontSize="27" fill="white" fontWeight="700">35°</text>
+        <path d="M707 480 L1080 219" stroke="#f8d67d" strokeWidth="6" strokeDasharray="16 12"/>
+        <path d="M707 480 H1080" stroke="#fff8e8" strokeWidth="3" strokeDasharray="12 10" opacity=".8"/>
+        <path d="M707 480 A95 95 0 0 0 780 432" stroke="#f8d67d" strokeWidth="6" fill="none"/>
+        <rect x="780" y="410" width="105" height="48" rx="12" fill="#183544"/><text x="832" y="442" textAnchor="middle" fontSize="27" fill="white" fontWeight="700">35°</text>
         <rect x="560" y="490" width="180" height="45" rx="12" fill="#183544"/><text x="650" y="520" textAnchor="middle" fontSize="25" fill="white" fontWeight="700">8 meter</text>
-        <g transform="translate(400 480)"><circle cy="-22" r="18" fill="#d9a889"/><path d="M-22 0 Q0 -12 22 0 L30 90 H-30Z" fill="#8bbbe0"/><path d="M-15 88 L-20 125 M15 88 L20 125" stroke="#263b48" strokeWidth="12"/></g>
+        <g transform="translate(707 480)"><circle cy="-22" r="18" fill="#d9a889"/><path d="M-22 0 Q0 -12 22 0 L30 90 H-30Z" fill="#8bbbe0"/><path d="M-15 88 L-20 125 M15 88 L20 125" stroke="#263b48" strokeWidth="12"/></g>
       </g>}
     </g>
   </svg>;
