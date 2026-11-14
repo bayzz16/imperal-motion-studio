@@ -16,20 +16,14 @@ const cast: {name: Speaker; role: string; color: string; female: boolean}[] = [
 ];
 const clamp = {extrapolateLeft:'clamp' as const, extrapolateRight:'clamp' as const};
 const scenes: Record<Scene,{label:string;title:string;description:string;view:string}> = {
-  opening:{label:'PEMBUKAAN',title:'Belajar trigonometri
-di halaman sekolah',description:'Enam anggota kelompok memulai praktik pengukuran tinggi tiang bendera.',view:'wide'},
-  tools:{label:'ALAT DAN BAHAN',title:'Siapkan alat
-pengukuran sederhana',description:'Meteran, busur derajat, sedotan, benang, pemberat, dan kalkulator.',view:'tools'},
+  opening:{label:'PEMBUKAAN',title:'Belajar trigonometri\ndi halaman sekolah',description:'Enam anggota kelompok memulai praktik pengukuran tinggi tiang bendera.',view:'wide'},
+  tools:{label:'ALAT DAN BAHAN',title:'Siapkan alat\npengukuran sederhana',description:'Meteran, busur derajat, sedotan, benang, pemberat, dan kalkulator.',view:'tools'},
   build:{label:'MEMBUAT KLINOMETER',title:'Merakit alat pengukur sudut',description:'Sedotan menjadi pembidik, benang dan pemberat menunjukkan garis vertikal.',view:'close'},
-  measure:{label:'PENGUKURAN',title:'Bidik puncak tiang
-dari posisi pengamat',description:'Jarak mendatar 8 meter • sudut elevasi 35° • tinggi mata 1,5 meter.',view:'pov'},
-  geometry:{label:'MODEL SEGITIGA',title:'Ubah pengukuran
-menjadi segitiga siku-siku',description:'Sudut elevasi diukur dari garis horizontal setinggi mata pengamat.',view:'diagram'},
+  measure:{label:'PENGUKURAN',title:'Bidik puncak tiang\ndari posisi pengamat',description:'Jarak mendatar 8 meter • sudut elevasi 35° • tinggi mata 1,5 meter.',view:'pov'},
+  geometry:{label:'MODEL SEGITIGA',title:'Ubah pengukuran\nmenjadi segitiga siku-siku',description:'Sudut elevasi diukur dari garis horizontal setinggi mata pengamat.',view:'diagram'},
   formula:{label:'PERHITUNGAN',title:'Gunakan perbandingan tangen',description:'tan θ = sisi depan ÷ sisi samping.',view:'formula'},
-  result:{label:'HASIL SIMULASI',title:'Tinggi tiang sekitar
-7,10 meter',description:'Hasil contoh perhitungan, bukan pengukuran nyata di sekolah.',view:'result'},
-  closing:{label:'PENUTUP',title:'Trigonometri ada
-di sekitar kita',description:'Kelompok belajar mengukur, menghitung, dan bekerja sama.',view:'wide'},
+  result:{label:'HASIL SIMULASI',title:'Tinggi tiang sekitar\n7,10 meter',description:'Hasil contoh perhitungan, bukan pengukuran nyata di sekolah.',view:'result'},
+  closing:{label:'PENUTUP',title:'Trigonometri ada\ndi sekitar kita',description:'Kelompok belajar mengukur, menghitung, dan bekerja sama.',view:'wide'},
 };
 const sceneOrder: Scene[] = ['opening','tools','build','measure','geometry','formula','result','closing'];
 
