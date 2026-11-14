@@ -94,13 +94,16 @@ test('stably sorts captions while preserving overlapping cues', () => {
 
 test('resolves proportional safe areas for vertical and landscape canvases', () => {
   const vertical = resolveCaptionLayout({width: 1080, height: 1920});
-  assert.equal(vertical.horizontalInset, 86.4);
-  assert.equal(vertical.bottomInset, 230.4);
-  assert.equal(vertical.maxWidth, 907.2);
-  assert.equal(vertical.fontSize, 47.52);
+  const assertApprox = (actual, expected) => {
+    assert.ok(Math.abs(actual - expected) < 1e-9, `Expected ${actual} to be close to ${expected}`);
+  };
+  assertApprox(vertical.horizontalInset, 86.4);
+  assertApprox(vertical.bottomInset, 230.4);
+  assertApprox(vertical.maxWidth, 907.2);
+  assertApprox(vertical.fontSize, 47.52);
 
   const landscape = resolveCaptionLayout({width: 1920, height: 1080, fontSize: 48});
-  assert.equal(landscape.maxWidth, 1612.8);
+  assertApprox(landscape.maxWidth, 1612.8);
   assert.equal(landscape.fontSize, 48);
 });
 
