@@ -38,7 +38,7 @@ const root=process.cwd(),dir=path.join(root,'public','audio','trigonometri');
 fs.mkdirSync(dir,{recursive:true});
 const exe=process.env.EDGE_TTS_BIN||path.join(root,'.venv-tts',process.platform==='win32'?'Scripts/edge-tts.exe':'bin/edge-tts');
 const run=(cmd,args)=>{const r=spawnSync(cmd,args,{encoding:'utf8'});if(r.error||r.status!==0)throw new Error(r.error?.message||r.stderr||cmd+' failed');return r.stdout.trim();};
-const fps=30,gapFrames=12;let cursor=0;
+const fps=30,gapFrames=Math.round(.55*fps);let cursor=0;
 const cues=[];
 for(let i=0;i<dialogue.length;i++){
  const line=dialogue[i];
@@ -50,15 +50,31 @@ for(let i=0;i<dialogue.length;i++){
  const duration=Number(run('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',output]));
  if(!Number.isFinite(duration)||duration<=0)throw new Error('Cannot measure dialogue '+(i+1));
  const frames=Math.ceil(duration*fps);
- cues.push({...line,file,startFrame:cursor,durationFrames:frames});
- cursor+=frames+gapFrames;
+ cues.push({...line,startFrame:cursor,durationFrames:frames});
+ cursor+=frames+(i<dialogue.length-1?gapFrames:0);
 }
-const total=cursor+fps*2;
+const silence=path.join(dir,'trigonometri-pause.mp3');
+run('ffmpeg',['-y','-f','lavfi','-i','anullsrc=r=24000:cl=mono','-t',(gapFrames/fps).toFixed(3),'-ar','24000','-ac','1','-b:a','64k',silence]);
+const list=path.join(dir,'trigonometri-concat.txt');
+const ordered=[];
+for(let i=0;i<dialogue.length;i++){
+ ordered.push(path.join(root,'public','audio','trigonometri','dialogue-'+String(i+1).padStart(2,'0')+'.mp3'));
+ if(i<dialogue.length-1)ordered.push(silence);
+}
+fs.writeFileSync(list,ordered.map(p=>"file '"+p.replace(/'/g,"'\\''")+"'").join('\n')+'\n');
+const narration=path.join(root,'public','audio','trigonometri-narration.mp3');
+run('ffmpeg',['-y','-f','concat','-safe','0','-i',list,'-ar','24000','-ac','1','-b:a','96k',narration]);
+const totalSeconds=Number(run('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',narration]));
+if(!Number.isFinite(totalSeconds)||totalSeconds<=0||fs.statSync(narration).size<20000)throw new Error('Combined narration validation failed');
+const total=Math.ceil(totalSeconds*fps)+fps*2;
 const output='// Generated from measured single-voice Indonesian narration audio.\nexport const TRIGONOMETRI_DIALOGUE_CUES = '+JSON.stringify(cues,null,2)+' as const;\nexport const TRIGONOMETRI_DURATION_FRAMES = '+total+';\n';
 const compiled=ts.transpileModule(output,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2020},reportDiagnostics:true});
 const errors=(compiled.diagnostics||[]).filter((diagnostic)=>diagnostic.category===ts.DiagnosticCategory.Error);
 if(errors.length)throw new Error('Generated timing module failed TypeScript validation: '+errors.map((diagnostic)=>ts.flattenDiagnosticMessageText(diagnostic.messageText,' ')).join('; '));
 fs.writeFileSync(path.join(root,'src/generated/trigonometri-timing.ts'),output);
-console.log('Generated and measured '+cues.length+' narration clips using one voice.');
+for(let i=1;i<=dialogue.length;i++)fs.unlinkSync(path.join(dir,'dialogue-'+String(i).padStart(2,'0')+'.mp3'));
+fs.unlinkSync(silence);fs.unlinkSync(list);
+console.log('Generated '+cues.length+' timed narration segments using one voice and assembled them into one MP3 track.');
 console.log('Narrator voice: '+voice+' ('+rate+', '+pitch+').');
-console.log('Total duration: '+(total/fps).toFixed(2)+' seconds.');
+console.log('Combined narration duration: '+totalSeconds.toFixed(2)+' seconds.');
+console.log('Composition duration: '+(total/fps).toFixed(2)+' seconds.');
