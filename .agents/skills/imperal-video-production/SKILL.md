@@ -91,3 +91,16 @@ A project is not ready for final rendering until:
 - source and licensing notes are recorded.
 
 If browsing, image inspection, or reference access is unavailable, state that limitation and request suitable references or proceed only with an explicitly labeled provisional design. Never fabricate research, source URLs, or image inspection.
+
+
+## Mandatory causal and physical continuity gate
+
+Every meaningful action or scientific claim in narration must have a visible cause, process, and consequence in the animation. Do not use narration as a substitute for showing the process.
+
+Before animating, build a cause-and-effect table for key beats: cause/precondition, visible process, result, and narration cue. Ensure the cause appears before the effect.
+
+For example, if narration says a seed absorbs water, establish a plausible moisture source or condition (rain, irrigation, or already-moist soil), show moisture entering the soil and reaching the seed, then show the seed swelling before the radicle emerges. Rain is one possible source, not a universal requirement. Germination also depends on suitable moisture, oxygen, and temperature. Do not imply sunlight is required by every species for germination; show light as important for the emerging seedling's later photosynthetic growth.
+
+Reject sequences where an object changes without a visible or established cause, narration describes an action absent from the frame, an effect appears before its cause, physical continuity breaks between shots, or audio timing contradicts the visuals.
+
+Apply this gate to educational, scientific, procedural, and story-driven animations. Record the sequence in the storyboard/reference sheet and verify it in rendered frames.

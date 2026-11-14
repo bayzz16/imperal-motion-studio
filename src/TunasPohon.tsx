@@ -7,8 +7,8 @@ const DURATION = 90 * FPS;
 const SCENE_FRAMES = 450;
 
 const scenes = [
-  {tag: 'AWAL KEHIDUPAN', title: 'Semuanya bermula\ndari sebuah biji.', subtitle: 'Kecil, tenang, dan menyimpan kemungkinan.'},
-  {tag: 'PERKECAMBAHAN', title: 'Akar tumbuh ke bawah.\nTunas mencari cahaya.', subtitle: 'Air mengaktifkan embrio di dalam biji.'},
+  {tag: 'AWAL KEHIDUPAN', title: 'Semuanya bermula\ndari sebuah biji.', subtitle: 'Hujan membasahi tanah; air meresap menuju biji.'},
+  {tag: 'PERKECAMBAHAN', title: 'Akar tumbuh ke bawah.\nTunas mencari cahaya.', subtitle: 'Biji menyerap kelembapan, lalu akar pertama muncul.'},
   {tag: 'KECAMBAHAN', title: 'Dua daun pertama\nmenyambut matahari.', subtitle: 'Daun sejati mulai berkembang dan membuat makanan melalui fotosintesis.'},
   {tag: 'POHON MUDA', title: 'Batang menguat.\nAkar menyebar.', subtitle: 'Sedikit demi sedikit, tanaman membangun bentuk pohonnya.'},
   {tag: 'BERTUMBUH', title: 'Cabang terbuka.\nRimbun mulai terbentuk.', subtitle: 'Tahun demi tahun, batang menebal dan tajuk semakin luas.'},
@@ -88,7 +88,9 @@ export const TunasPohon: React.FC = () => {
   const localFrame = frame - sceneIndex * SCENE_FRAMES;
   const scene = scenes[sceneIndex];
   const sceneOpacity = interpolate(localFrame, [0, 20, SCENE_FRAMES - 22, SCENE_FRAMES], [0, 1, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const rain = sceneIndex === 3 ? interpolate(localFrame, [0, 35, 330, 449], [0, 0.8, 0.8, 0], {extrapolateRight: 'clamp'}) : 0;
+  // Establish the moisture source before the seed begins germinating.
+  const rain = sceneIndex === 0 ? interpolate(localFrame, [35, 90, 245, 330], [0, 0.85, 0.85, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) : 0;
+  const soilMoisture = interpolate(frame, [80, 230, 430, 700], [0, 0.92, 0.78, 0.38], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const sunGlow = interpolate(progress, [0.05, 0.8], [0.1, 0.65], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const musicVolume = interpolate(frame, [0, 80, 2300, 2699], [0.045, 0.07, 0.075, 0.05], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
@@ -127,6 +129,13 @@ export const TunasPohon: React.FC = () => {
           <g opacity={interpolate(progress, [0.01, 0.13], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}>
             <ellipse cx="540" cy="1288" rx="23" ry="15" fill="#9b6941" stroke="#68452f" strokeWidth="4"/>
             <path d="M529 1286 Q540 1276 552 1287" fill="none" stroke="#d3a36b" strokeWidth="3" strokeLinecap="round"/>
+          </g>
+          <g opacity={soilMoisture * 0.55}>
+            <ellipse cx="540" cy="1300" rx="180" ry="92" fill="#4c9fc0" opacity="0.3"/>
+            <path d="M360 1278 Q420 1318 470 1295 T575 1300 T720 1280" fill="none" stroke="#76c5df" strokeWidth="7" strokeLinecap="round" strokeDasharray="13 16" strokeDashoffset={-frame * 1.2}/>
+            <path d="M425 1360 Q465 1325 500 1310 Q520 1300 540 1298 M655 1360 Q620 1320 580 1310 Q560 1302 540 1298" fill="none" stroke="#70b8d1" strokeWidth="5" strokeLinecap="round" strokeDasharray="8 13" strokeDashoffset={frame * 0.9}/>
+            <circle cx={500 + Math.sin(frame / 13) * 13} cy={1302 + Math.cos(frame / 17) * 8} r="5" fill="#a8e5f3"/>
+            <circle cx={580 + Math.cos(frame / 15) * 11} cy={1312 + Math.sin(frame / 19) * 7} r="4" fill="#a8e5f3"/>
           </g>
           <GrowingTree growth={progress} frame={frame}/>
           <g opacity={rain} stroke="#e9f2f1" strokeWidth="4" strokeLinecap="round">
