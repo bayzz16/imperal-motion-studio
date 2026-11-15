@@ -27,6 +27,7 @@ All projects are separate Remotion compositions registered in `src/projects/regi
 - Extended MP4 quality checks for audio/video presence, dimensions, frame rate, A/V duration drift, full-stream decoding, possible black/frozen sections, and measured audio volume.
 - Motion regression tests plus MP4 validation for video/audio streams, duration, dimensions, frame rate, A/V drift, and full-stream decode diagnostics.
 - GitHub Actions rendering to MP4, with downloadable artifacts retained for 14 days.
+- Configurable caption readability QC for CPS, WPM, line length, line count, and cue duration; optional reference profiles are documented in [docs/caption-qc.md](docs/caption-qc.md).
 
 
 ## Botanical test video references
@@ -163,6 +164,8 @@ const captions = parseCaptionFile(subtitleText, 'vtt'); // or 'srt'
 ```
 
 `CaptionTrack` selects cues from the current Remotion frame, stacks overlapping cues, and keeps text inside configurable canvas-relative safe areas. Defaults reserve 8% horizontally and 12% at the bottom. The background, text color, and font size can be adjusted per project. If subtitle text is fetched asynchronously inside a composition, use Remotion's `useDelayRender()` pattern so rendering waits for the file to load.
+
+For pre-render review, `analyzeCaptionReadability` in `src/captions/caption-qc.ts` reports configurable reading-speed, line, and duration warnings without rewriting captions. Its named Netflix and DCMP presets are references for specific audiences and delivery contexts, not universal Indonesian subtitle rules. See [the caption QC notes](docs/caption-qc.md).
 
 ## Dialogue voice library
 
