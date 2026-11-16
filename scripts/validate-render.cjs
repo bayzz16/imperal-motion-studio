@@ -69,6 +69,36 @@ const parseQualityDiagnostics = (log) => {
   };
 };
 
+const runDiagnostics = (file, spawn = spawnSync) => {
+  const run = (audioFilter) => spawn(
+    'ffmpeg',
+    [
+      '-hide_banner', '-i', file,
+      '-vf', 'blackdetect=d=0.75:pix_th=0.01,freezedetect=n=-50dB:d=2',
+      '-af', audioFilter,
+      '-f', 'null', '-',
+    ],
+    {encoding: 'utf8', maxBuffer: 8 * 1024 * 1024},
+  );
+
+  const primary = run('volumedetect,' + buildLoudnormMeasurementFilter());
+  if (!primary.error && primary.status === 0) {
+    return {result: primary, loudnessAvailable: true, loudnessFallback: false};
+  }
+
+  const fallback = run('volumedetect');
+  if (!fallback.error && fallback.status === 0) {
+    return {result: fallback, loudnessAvailable: false, loudnessFallback: true};
+  }
+
+  return {
+    result: fallback,
+    loudnessAvailable: false,
+    loudnessFallback: false,
+    primaryError: primary.error?.message || primary.stderr || 'FFmpeg loudnorm scan failed',
+  };
+};
+
 const main = () => {
   const file = process.env.OUTPUT_PATH ||
     path.join(process.cwd(), 'out', process.env.OUTPUT_FILENAME || 'tunas-dewa.mp4');
@@ -89,18 +119,10 @@ const main = () => {
   }
 
   const summary = validateProbeData(JSON.parse(probe.stdout));
-  const diagnostics = spawnSync(
-    'ffmpeg',
-    [
-      '-hide_banner', '-i', file,
-      '-vf', 'blackdetect=d=0.75:pix_th=0.01,freezedetect=n=-50dB:d=2',
-      '-af', 'volumedetect,' + buildLoudnormMeasurementFilter(),
-      '-f', 'null', '-',
-    ],
-    {encoding: 'utf8', maxBuffer: 8 * 1024 * 1024},
-  );
+  const diagnosticScan = runDiagnostics(file);
+  const diagnostics = diagnosticScan.result;
   if (diagnostics.error || diagnostics.status !== 0) {
-    throw new Error(diagnostics.error?.message || diagnostics.stderr || 'Full-stream quality scan failed');
+    throw new Error(diagnostics.error?.message || diagnosticScan.primaryError || diagnostics.stderr || 'Full-stream quality scan failed');
   }
 
   const quality = parseQualityDiagnostics(diagnostics.stderr || '');
@@ -131,6 +153,8 @@ const main = () => {
     if (reference.truePeakWithinReference === false) {
       console.warn('True peak is above the EBU R 128 generic PCM production reference. Check the intended delivery profile; no automatic normalization was applied.');
     }
+  } else if (diagnosticScan.loudnessFallback) {
+    console.warn('FFmpeg loudnorm analysis is unavailable; the existing decode and mean-volume checks completed without loudness metrics.');
   } else {
     console.warn('EBU R 128 loudness metrics were not reported by FFmpeg; check that the installed FFmpeg build supports the loudnorm filter.');
   }
@@ -145,4 +169,4 @@ const main = () => {
 
 if (require.main === module) main();
 
-module.exports = {parseRational, validateProbeData, parseQualityDiagnostics};
+module.exports = {parseRational, validateProbeData, parseQualityDiagnostics, runDiagnostics};
