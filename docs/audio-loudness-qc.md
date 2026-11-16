@@ -40,6 +40,7 @@ The existing structural checks and full-stream decode scan remain in place. No a
 ## Limitations
 
 - Results depend on the FFmpeg build and its loudnorm implementation. The validator checks whether JSON metrics were emitted but does not claim formal meter certification against the EBU test set.
+- If the installed FFmpeg build does not support loudnorm, the validator retries the existing volumedetect-only scan. It still fails if that fallback decode scan fails.
 - Very short or silent content may produce unavailable integrated loudness/true-peak metrics. Missing values are represented as unavailable, not zero.
 - A true-peak warning is a review prompt, not proof of audible clipping.
 - The EBU R 128 reference is intended for broadcast-oriented programme production, not every web platform. Select the delivery specification before treating any number as a pass/fail requirement.
