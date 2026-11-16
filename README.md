@@ -124,7 +124,7 @@ npm run render:tunas-dewa
 
 Output: `out/tunas-dewa.mp4`. The narration voice, speaking rate, and pitch can be changed with `TTS_VOICE`, `TTS_RATE`, and `TTS_PITCH`.
 
-**Important:** neural TTS uses an online service via an unofficial community client, not a locally installed human voice recording. Internet access is required when generating the voice; service availability or behavior may change. If synthesis fails, the build stops rather than silently reverting to the robotic eSpeak voice.
+**Important:** neural TTS uses an online service via an unofficial community client, not a locally installed human voice recording. Service availability or behavior may change. If synthesis fails, the build stops rather than silently reverting to the robotic eSpeak voice.
 
 ## Render on GitHub
 
