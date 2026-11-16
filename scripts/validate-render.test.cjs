@@ -2,7 +2,7 @@
 
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const {parseRational, validateProbeData, parseQualityDiagnostics} = require('./validate-render.cjs');
+const {parseRational, validateProbeData, parseQualityDiagnostics, runDiagnostics} = require('./validate-render.cjs');
 
 const validProbe = () => ({
   format: {duration: '10.000'},
@@ -57,4 +57,36 @@ test('parses black, freeze, audio-volume and loudness diagnostics', () => {
     loudnessRangeLu: 3.2,
     thresholdLufs: -30,
   });
+});
+
+
+test('keeps the existing decode scan when FFmpeg lacks loudnorm support', () => {
+  const calls = [];
+  const spawn = (_command, args) => {
+    calls.push(args);
+    if (calls.length === 1) return {status: 1, stderr: 'No such filter: loudnorm'};
+    return {status: 0, stderr: 'mean_volume: -18.5 dB'};
+  };
+
+  const result = runDiagnostics('fixture.mp4', spawn);
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0][calls[0].indexOf('-af') + 1].includes('loudnorm'), true);
+  assert.equal(calls[1][calls[1].indexOf('-af') + 1], 'volumedetect');
+  assert.equal(result.loudnessAvailable, false);
+  assert.equal(result.loudnessFallback, true);
+  assert.equal(result.result.status, 0);
+});
+
+test('does not hide a failed fallback full-stream scan', () => {
+  let callCount = 0;
+  const spawn = () => {
+    callCount += 1;
+    return {status: 1, stderr: callCount === 1 ? 'loudnorm failed' : 'decode failed'};
+  };
+
+  const result = runDiagnostics('fixture.mp4', spawn);
+  assert.equal(callCount, 2);
+  assert.equal(result.loudnessFallback, false);
+  assert.equal(result.result.status, 1);
+  assert.equal(result.primaryError, 'loudnorm failed');
 });
