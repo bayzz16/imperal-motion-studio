@@ -28,7 +28,6 @@ const Tree:React.FC<{x:number;y:number;scale:number;wind:number}>=({x,y,scale,wi
  <path d="M0 0 Q-15 -125 4 -260 Q18 -320 0 -365" stroke="#5b4638" strokeWidth="38" fill="none" strokeLinecap="round"/>
  <path d={'M0 -230 Q'+(-75+wind)+' -290 -120 -330 M0 -270 Q'+(80+wind)+' -320 130 -370'} stroke="#5b4638" strokeWidth="19" fill="none" strokeLinecap="round"/>
  {[[0,-390,120],[-100,-350,95],[105,-385,100],[-5,-300,115]].map(([cx,cy,r],i)=><circle key={i} cx={cx} cy={cy} r={r} fill={i%2?'#527b62':'#668d6a'} stroke="#3e6653" strokeWidth="5"/>)}</g>;
-};
 export const SaifulSagita:React.FC=()=>{
  const frame=useCurrentFrame(),idx=Math.min(6,Math.max(0,SAIFUL_SAGITA_SCENE_STARTS.reduce<number>((a,s,i)=>frame>=s?i:a,0))),local=frame-SAIFUL_SAGITA_SCENE_STARTS[idx],scene=scenes[idx];
  const fade=interpolate(local,[0,24],[0,1],{...clamp,easing:Easing.out(Easing.quad)}),rise=interpolate(local,[0,30],[32,0],{...clamp,easing:Easing.out(Easing.cubic)});
