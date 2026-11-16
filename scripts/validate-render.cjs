@@ -122,7 +122,7 @@ const main = () => {
   const diagnosticScan = runDiagnostics(file);
   const diagnostics = diagnosticScan.result;
   if (diagnostics.error || diagnostics.status !== 0) {
-    throw new Error(diagnostics.error?.message || diagnosticScan.primaryError || diagnostics.stderr || 'Full-stream quality scan failed');
+    throw new Error(diagnostics.error?.message || diagnostics.stderr || diagnosticScan.primaryError || 'Full-stream quality scan failed');
   }
 
   const quality = parseQualityDiagnostics(diagnostics.stderr || '');
