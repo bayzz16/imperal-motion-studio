@@ -10,6 +10,8 @@ import {KyandraRoast} from '../KyandraRoast';
 import {KYANDRA_DURATION_FRAMES} from '../generated/kyandra-timing';
 import {GalaxyEducation} from '../GalaxyEducation';
 import {GALAXY_DURATION_FRAMES} from '../generated/galaxy-timing';
+import {SaifulSagita} from '../SaifulSagita';
+import {SAIFUL_SAGITA_DURATION_FRAMES} from '../generated/saiful-sagita-timing';
 
 export type VideoProjectDefinition = {
   id: string;
@@ -72,6 +74,14 @@ export const VIDEO_PROJECTS: VideoProjectDefinition[] = [
     fps: 30,
     width: 1080,
     height: 1920,
+  },
+  {
+    id: 'SaifulSagita',
+    component: SaifulSagita,
+    durationInFrames: SAIFUL_SAGITA_DURATION_FRAMES,
+    fps: 30,
+    width: 1920,
+    height: 1080,
   },
   {
     id: 'ImperialSolTeaser',
