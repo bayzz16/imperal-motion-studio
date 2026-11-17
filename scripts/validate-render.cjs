@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const {spawnSync} = require('node:child_process');
+const {analyzeColorMetadata} = require('./color-metadata-qc.cjs');
 
 const parseRational = (value) => {
   if (typeof value !== 'string' || !value.includes('/')) return Number(value);
@@ -46,6 +47,7 @@ const validateProbeData = (data, options = {}) => {
     avDriftSeconds: Number.isFinite(videoDuration) && Number.isFinite(audioDuration)
       ? Math.abs(videoDuration - audioDuration)
       : null,
+    color: analyzeColorMetadata(video, options.colorProfile || 'metadata-only'),
   };
 };
 
@@ -75,14 +77,16 @@ const main = () => {
 
   const probe = spawnSync(
     'ffprobe',
-    ['-v', 'error', '-show_entries', 'format=duration:stream=codec_type,codec_name,width,height,duration,avg_frame_rate,r_frame_rate', '-of', 'json', file],
+    ['-v', 'error', '-show_entries', 'format=duration:stream=codec_type,codec_name,width,height,duration,avg_frame_rate,r_frame_rate,pix_fmt,bits_per_raw_sample,color_range,color_space,color_transfer,color_primaries', '-of', 'json', file],
     {encoding: 'utf8'},
   );
   if (probe.error || probe.status !== 0) {
     throw new Error(probe.error?.message || probe.stderr || 'ffprobe failed');
   }
 
-  const summary = validateProbeData(JSON.parse(probe.stdout));
+  const summary = validateProbeData(JSON.parse(probe.stdout), {
+    colorProfile: process.env.COLOR_QC_PROFILE || 'metadata-only',
+  });
   const diagnostics = spawnSync(
     'ffmpeg',
     [
@@ -107,6 +111,14 @@ const main = () => {
   console.log('Video codec: ' + summary.videoCodec);
   console.log('Audio codec: ' + summary.audioCodec);
   console.log('Audio/video drift: ' + (summary.avDriftSeconds === null ? 'not reported by ffprobe' : summary.avDriftSeconds.toFixed(3) + ' s'));
+  console.log('Color QC profile: ' + summary.color.profile);
+  console.log('Color classification: ' + summary.color.classification);
+  console.log('Color metadata: ' + JSON.stringify(summary.color.metadata));
+  if (summary.color.warnings.length) {
+    for (const warning of summary.color.warnings) console.warn('Color QC review: ' + warning);
+  } else {
+    console.log('Color metadata QC: no warnings');
+  }
   console.log('Full-stream decode scan completed');
   console.log('Detected long black segments: ' + quality.blackSegments.length);
   console.log('Detected freeze starts: ' + quality.freezeStarts.length);
