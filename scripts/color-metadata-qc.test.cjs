@@ -22,14 +22,14 @@ test('accepts complete and internally consistent BT.709 SDR metadata', () => {
   assert.equal(result.metadata.bitsPerRawSample, 8);
 });
 
-test('reports missing metadata without treating missing values as zero or as a fatal render error', () => {
+test('reports missing metadata as advisory review', () => {
   const result = analyzeColorMetadata({pix_fmt: 'yuv420p', color_range: 'unknown'});
   assert.equal(result.classification, 'incomplete');
   assert.equal(result.status, 'review');
   assert.equal(result.warnings.length, 4);
 });
 
-test('classifies BT.2020 PQ as HDR and leaves it unchanged in metadata-only mode', () => {
+test('classifies BT.2020 PQ as HDR without changing metadata', () => {
   const result = analyzeColorMetadata(bt709({
     color_primaries: 'bt2020', color_transfer: 'smpte2084', color_space: 'bt2020nc', bits_per_raw_sample: '10',
   }));
@@ -43,6 +43,13 @@ test('classifies BT.2020 HLG as HDR', () => {
     color_primaries: 'bt2020', color_transfer: 'arib-std-b67', color_space: 'bt2020nc',
   }));
   assert.equal(result.classification, 'hdr-hlg-bt2020');
+});
+
+test('does not label a linear BT.2020 signal as SDR', () => {
+  const result = analyzeColorMetadata(bt709({
+    color_primaries: 'bt2020', color_transfer: 'linear', color_space: 'bt2020nc',
+  }));
+  assert.equal(result.classification, 'other');
 });
 
 test('recognizes a consistent BT.601 family without forcing BT.709', () => {
