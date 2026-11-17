@@ -2,32 +2,24 @@
 
 const COLOR_PROFILES = Object.freeze({
   'metadata-only': Object.freeze({description: 'Report metadata completeness and internal consistency without assuming a delivery target.'}),
-  'youtube-sdr': Object.freeze({
-    description: 'Compare against YouTube recommended BT.709 SDR upload metadata.',
-    colorPrimaries: 'bt709',
-    colorTransfer: 'bt709',
-    colorMatrix: 'bt709',
-    colorRange: 'tv',
-  }),
+  'youtube-sdr': Object.freeze({description: 'Compare against YouTube recommended BT.709 SDR upload metadata.'}),
 });
-
 const MISSING_VALUES = new Set(['', 'unknown', 'unspecified', 'reserved', 'n/a', 'na', 'none', 'null']);
 const BT601_VALUES = new Set(['smpte170m', 'bt470bg', 'bt601-6-525', 'bt601-6-625']);
 const BT2020_MATRIX_VALUES = new Set(['bt2020nc', 'bt2020c', 'bt2020_ncl', 'bt2020_cl', 'ictcp']);
+const SDR_TRANSFER_VALUES = new Set(['bt709', 'smpte170m', 'bt470m', 'bt470bg', 'gamma22', 'gamma28', 'smpte240m', 'iec61966-2-1', 'iec61966-2-4', 'bt2020-10', 'bt2020-12']);
 
 const normalizeValue = (value) => {
   if (typeof value !== 'string' && typeof value !== 'number') return null;
   const normalized = String(value).trim().toLowerCase();
   return MISSING_VALUES.has(normalized) ? null : normalized;
 };
-
 const normalizeRange = (value) => {
   const normalized = normalizeValue(value);
   if (['tv', 'mpeg', 'limited'].includes(normalized)) return 'tv';
   if (['pc', 'jpeg', 'full'].includes(normalized)) return 'pc';
   return normalized;
 };
-
 const getPrimariesFamily = (value) => {
   if (value === 'bt709') return 'bt709';
   if (BT601_VALUES.has(value)) return 'bt601';
@@ -35,7 +27,6 @@ const getPrimariesFamily = (value) => {
   if (['smpte431', 'smpte432'].includes(value)) return 'p3';
   return null;
 };
-
 const getMatrixFamily = (value) => {
   if (value === 'bt709') return 'bt709';
   if (BT601_VALUES.has(value)) return 'bt601';
@@ -47,18 +38,16 @@ const analyzeColorMetadata = (stream, profileName = 'metadata-only') => {
   if (!stream || typeof stream !== 'object' || Array.isArray(stream)) {
     throw new TypeError('A video stream metadata object is required.');
   }
-  const profile = COLOR_PROFILES[profileName];
-  if (!profile) throw new RangeError('Unsupported color QC profile: ' + profileName);
+  if (!COLOR_PROFILES[profileName]) throw new RangeError('Unsupported color QC profile: ' + profileName);
 
+  const rawBits = Number(stream.bits_per_raw_sample);
   const metadata = {
     pixelFormat: normalizeValue(stream.pix_fmt),
     colorRange: normalizeRange(stream.color_range),
     colorPrimaries: normalizeValue(stream.color_primaries),
     colorTransfer: normalizeValue(stream.color_transfer ?? stream.color_trc),
     colorMatrix: normalizeValue(stream.color_space ?? stream.colorspace),
-    bitsPerRawSample: Number.isFinite(Number(stream.bits_per_raw_sample)) && Number(stream.bits_per_raw_sample) > 0
-      ? Number(stream.bits_per_raw_sample)
-      : null,
+    bitsPerRawSample: Number.isFinite(rawBits) && rawBits > 0 ? rawBits : null,
   };
   const warnings = [];
   const required = [
@@ -67,7 +56,6 @@ const analyzeColorMetadata = (stream, profileName = 'metadata-only') => {
     ['colorMatrix', 'matrix coefficients'],
     ['colorRange', 'color range'],
   ];
-
   for (const [key, label] of required) {
     if (!metadata[key]) warnings.push('Missing or unspecified ' + label + ' metadata.');
   }
@@ -91,7 +79,7 @@ const analyzeColorMetadata = (stream, profileName = 'metadata-only') => {
     classification = 'sdr-bt709';
   } else if (primariesFamily === 'bt601' && matrixFamily === 'bt601') {
     classification = 'sdr-bt601';
-  } else if (['bt2020', 'p3'].includes(primariesFamily) && !['smpte2084', 'arib-std-b67'].includes(colorTransfer)) {
+  } else if (['bt2020', 'p3'].includes(primariesFamily) && SDR_TRANSFER_VALUES.has(colorTransfer)) {
     classification = 'wide-gamut-sdr';
   }
 
@@ -103,14 +91,7 @@ const analyzeColorMetadata = (stream, profileName = 'metadata-only') => {
       warnings.push('Full-range video detected. YouTube documents conversion of full range to limited range; review the delivery pipeline rather than changing tags alone.');
     }
   }
-
-  return {
-    profile: profileName,
-    classification,
-    status: warnings.length ? 'review' : 'ok',
-    metadata,
-    warnings,
-  };
+  return {profile: profileName, classification, status: warnings.length ? 'review' : 'ok', metadata, warnings};
 };
 
 module.exports = {COLOR_PROFILES, analyzeColorMetadata};
