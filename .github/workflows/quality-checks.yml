@@ -1,0 +1,65 @@
+name: Quality checks
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - '.github/workflows/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'remotion.config.ts'
+      - 'tsconfig.json'
+      - 'src/**'
+      - 'scripts/**'
+      - 'public/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'remotion.config.ts'
+      - 'tsconfig.json'
+      - 'src/**'
+      - 'scripts/**'
+      - 'public/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperal-quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Static checks and composition discovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out merge result
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 22
+
+      # The repository does not yet track a package-lock.json, so npm ci and
+      # lockfile-based setup-node caching are intentionally not enabled.
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Check CommonJS script syntax
+        shell: bash
+        run: find scripts -type f -name '*.cjs' -print0 | xargs -0 -r -n1 node --check
+
+      - name: TypeScript validation
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Discover Remotion compositions
+        run: npm run compositions
