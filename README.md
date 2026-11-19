@@ -146,7 +146,7 @@ The shared registry is project-agnostic; each composition remains independently 
 
 ## Build a sequential scene timeline
 
-`buildSceneTimeline` validates scene IDs and frame durations, then calculates each scene's start and exclusive end frame. `SceneSequence` maps an individual placement to Remotion's `Sequence` component. The planner handles sequential placement and gaps; it does not yet implement overlapping layers or transitions. Frame-based spring and easing helpers can drive independent visual layers without coupling the timeline planner to a specific visual style.
+`buildSceneTimeline` validates scene IDs and frame durations, then calculates each scene's start and exclusive end frame. `SceneSequence` maps an individual placement to Remotion's `Sequence` component. The planner supports sequential placement, explicit gaps, and pairwise scene overlaps via `transitionAfterFrames`; it exposes transition-in/out frame counts so scene components can drive their own animation. The planner does not choose or render a visual transition. Frame-based spring and easing helpers can drive independent visual layers without coupling the timeline planner to a specific visual style. See [overlap-aware timeline planning](docs/overlap-aware-scene-timeline.md).
 
 ## Subtitles and captions
 
