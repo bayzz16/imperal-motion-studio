@@ -3,6 +3,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const {spawnSync} = require('node:child_process');
+const {
+  buildLoudnormMeasurementFilter,
+  parseLoudnormStats,
+  compareWithEbuR128Reference,
+} = require('./audio-loudness.cjs');
 
 const parseRational = (value) => {
   if (typeof value !== 'string' || !value.includes('/')) return Number(value);
@@ -60,6 +65,37 @@ const parseQualityDiagnostics = (log) => {
     freezeStarts,
     freezeEnds,
     meanVolumeDb: volumeMatch ? volumeMatch[1] : null,
+    loudness: parseLoudnormStats(log),
+  };
+};
+
+const runDiagnostics = (file, spawn = spawnSync) => {
+  const run = (audioFilter) => spawn(
+    'ffmpeg',
+    [
+      '-hide_banner', '-i', file,
+      '-vf', 'blackdetect=d=0.75:pix_th=0.01,freezedetect=n=-50dB:d=2',
+      '-af', audioFilter,
+      '-f', 'null', '-',
+    ],
+    {encoding: 'utf8', maxBuffer: 8 * 1024 * 1024},
+  );
+
+  const primary = run('volumedetect,' + buildLoudnormMeasurementFilter());
+  if (!primary.error && primary.status === 0) {
+    return {result: primary, loudnessAvailable: true, loudnessFallback: false};
+  }
+
+  const fallback = run('volumedetect');
+  if (!fallback.error && fallback.status === 0) {
+    return {result: fallback, loudnessAvailable: false, loudnessFallback: true};
+  }
+
+  return {
+    result: fallback,
+    loudnessAvailable: false,
+    loudnessFallback: false,
+    primaryError: primary.error?.message || primary.stderr || 'FFmpeg loudnorm scan failed',
   };
 };
 
@@ -83,18 +119,10 @@ const main = () => {
   }
 
   const summary = validateProbeData(JSON.parse(probe.stdout));
-  const diagnostics = spawnSync(
-    'ffmpeg',
-    [
-      '-hide_banner', '-i', file,
-      '-vf', 'blackdetect=d=0.75:pix_th=0.01,freezedetect=n=-50dB:d=2',
-      '-af', 'volumedetect',
-      '-f', 'null', '-',
-    ],
-    {encoding: 'utf8', maxBuffer: 8 * 1024 * 1024},
-  );
+  const diagnosticScan = runDiagnostics(file);
+  const diagnostics = diagnosticScan.result;
   if (diagnostics.error || diagnostics.status !== 0) {
-    throw new Error(diagnostics.error?.message || diagnostics.stderr || 'Full-stream quality scan failed');
+    throw new Error(diagnostics.error?.message || diagnostics.stderr || diagnosticScan.primaryError || 'Full-stream quality scan failed');
   }
 
   const quality = parseQualityDiagnostics(diagnostics.stderr || '');
@@ -111,6 +139,26 @@ const main = () => {
   console.log('Detected long black segments: ' + quality.blackSegments.length);
   console.log('Detected freeze starts: ' + quality.freezeStarts.length);
   console.log('Mean audio volume: ' + (quality.meanVolumeDb ?? 'not reported'));
+
+  if (quality.loudness) {
+    const measured = quality.loudness;
+    const reference = compareWithEbuR128Reference(measured);
+    console.log('Integrated loudness: ' + (measured.integratedLufs === null ? 'not measurable (silence or unavailable)' : measured.integratedLufs.toFixed(2) + ' LUFS'));
+    console.log('Loudness range: ' + (measured.loudnessRangeLu === null ? 'not reported' : measured.loudnessRangeLu.toFixed(2) + ' LU'));
+    console.log('True peak: ' + (measured.truePeakDbtp === null ? 'not measurable (silence or unavailable)' : measured.truePeakDbtp.toFixed(2) + ' dBTP'));
+    console.log('EBU R 128 reference: -23 LUFS integrated; -1 dBTP maximum true peak for generic PCM production');
+    if (reference.integratedDeltaLufs !== null) {
+      console.log('Integrated loudness offset from EBU reference: ' + (reference.integratedDeltaLufs > 0 ? '+' : '') + reference.integratedDeltaLufs.toFixed(2) + ' LU');
+    }
+    if (reference.truePeakWithinReference === false) {
+      console.warn('True peak is above the EBU R 128 generic PCM production reference. Check the intended delivery profile; no automatic normalization was applied.');
+    }
+  } else if (diagnosticScan.loudnessFallback) {
+    console.warn('FFmpeg loudnorm analysis is unavailable; the existing decode and mean-volume checks completed without loudness metrics.');
+  } else {
+    console.warn('EBU R 128 loudness metrics were not reported by FFmpeg; check that the installed FFmpeg build supports the loudnorm filter.');
+  }
+
   if (quality.blackSegments.length || quality.freezeStarts.length) {
     console.warn('Quality scan found possible black/frozen sections. Review them; detections can be intentional scene holds or fades.');
   }
@@ -121,4 +169,4 @@ const main = () => {
 
 if (require.main === module) main();
 
-module.exports = {parseRational, validateProbeData, parseQualityDiagnostics};
+module.exports = {parseRational, validateProbeData, parseQualityDiagnostics, runDiagnostics};
