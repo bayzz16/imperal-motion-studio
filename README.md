@@ -24,7 +24,7 @@ All projects are separate Remotion compositions registered in `src/projects/regi
 - Adaptive cinematic render profiles that select output scale and render concurrency from available RAM and CPU resources.
 - Reusable animated celestial-body visuals (axial rotation, surface shading, atmosphere, clouds, and ring layers) in `src/visual/`, now used by Galaxy Education.
 - Shared cinematic finishing layer applied to every registered composition: subtle camera movement, restrained color grade, vignette, and low-opacity film texture.
-- Extended MP4 quality checks for audio/video presence, dimensions, frame rate, A/V duration drift, full-stream decoding, possible black/frozen sections, and measured audio volume.
+- Extended MP4 quality checks for audio/video presence, dimensions, frame rate, A/V duration drift, full-stream decoding, possible black/frozen sections, measured audio volume, and read-only color metadata QC.
 - Motion regression tests plus MP4 validation for video/audio streams, duration, dimensions, frame rate, A/V drift, and full-stream decode diagnostics.
 - GitHub Actions rendering to MP4, with downloadable artifacts retained for 14 days.
 
@@ -147,6 +147,10 @@ The shared registry is project-agnostic; each composition remains independently 
 ## Build a sequential scene timeline
 
 `buildSceneTimeline` validates scene IDs and frame durations, then calculates each scene's start and exclusive end frame. `SceneSequence` maps an individual placement to Remotion's `Sequence` component. The planner supports sequential placement, explicit gaps, and pairwise scene overlaps via `transitionAfterFrames`; it exposes transition-in/out frame counts so scene components can drive their own animation. The planner does not choose or render a visual transition. Frame-based spring and easing helpers can drive independent visual layers without coupling the timeline planner to a specific visual style. See [overlap-aware timeline planning](docs/overlap-aware-scene-timeline.md).
+
+## Video color metadata QC
+
+The render validator reads FFprobe color primaries, transfer characteristics, matrix coefficients, range, pixel format, and raw sample bit depth. It reports missing or conflicting metadata without changing the rendered file. The default `metadata-only` profile is non-prescriptive; set `COLOR_QC_PROFILE=youtube-sdr` when checking against YouTube's BT.709 SDR upload recommendation. This profile is advisory and does not convert pixels or certify visual color accuracy. See [docs/color-metadata-qc.md](docs/color-metadata-qc.md) for sources, profile behavior, and limitations.
 
 ## Subtitles and captions
 
