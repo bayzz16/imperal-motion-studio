@@ -61,5 +61,8 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      - name: Discover Remotion compositions
+      - name: Discover production Remotion compositions
         run: npm run compositions
+
+      - name: Discover isolated transition test composition
+        run: npm run compositions:transition-test
