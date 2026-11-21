@@ -16,7 +16,8 @@ All projects are separate Remotion compositions registered in `src/projects/regi
 - Remotion Studio for previewing compositions.
 - Project registry for independent compositions.
 - Reusable sequential scene-timeline planning and a Remotion `SceneSequence` adapter.
-- Automated scene-timeline unit tests.
+- Reusable visual scene transitions (fade, slide, wipe, and flip) with linear or spring timing in `src/transitions/`.
+- Automated scene-timeline and transition-plan unit tests.
 - Deterministic camera movement and reusable frame-driven motion/orbit mathematics in `src/motion/`.
 - Reusable spring response, cubic-bezier easing, range mapping, and damped oscillation primitives in `src/motion/physics.ts`.
 - Camera movement regression tests covering all presets, deterministic output, frame clamping, and invalid inputs.
@@ -147,6 +148,10 @@ The shared registry is project-agnostic; each composition remains independently 
 ## Build a sequential scene timeline
 
 `buildSceneTimeline` validates scene IDs and frame durations, then calculates each scene's start and exclusive end frame. `SceneSequence` maps an individual placement to Remotion's `Sequence` component. The planner supports sequential placement, explicit gaps, and pairwise scene overlaps via `transitionAfterFrames`; it exposes transition-in/out frame counts so scene components can drive their own animation. The planner does not choose or render a visual transition. Frame-based spring and easing helpers can drive independent visual layers without coupling the timeline planner to a specific visual style. See [overlap-aware timeline planning](docs/overlap-aware-scene-timeline.md).
+
+## Reusable visual scene transitions
+
+`SceneTransitionSeries` turns scene descriptors into Remotion's `TransitionSeries` sequence. Set `transitionAfterFrames` on a scene to add a transition before the next scene. The default is a two-sided fade; `slide`, `wipe`, and `flip` are also available, with linear or spring timing. See [cinematic transition engine](docs/cinematic-transitions.md) for the API, constraints, and licensing notes.
 
 ## Subtitles and captions
 
