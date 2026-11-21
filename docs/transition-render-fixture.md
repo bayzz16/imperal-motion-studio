@@ -4,7 +4,7 @@
 
 This fixture isolates the reusable transition adapter from all production projects. It contains five synthetic color-card scenes and exercises fade, slide, wipe, and flip without TTS, network media, project assets, or the production project registry.
 
-The fixture is registered through a separate entry point (src/transition-test.tsx) and is deliberately not imported by src/index.tsx.
+The fixture is registered through a separate entry point (src/transition-test.tsx) and is deliberately not imported by src/index.tsx. Run `npm run compositions:transition-test` to validate that isolated entry point without rendering media.
 
 ## Timeline
 
@@ -51,7 +51,7 @@ The CLI frame selection option supports comma-separated still-frame samples in R
 
 The adapter integration tests use mocked Remotion transition primitives to verify that the adapter passes the intended presentation, direction, timing, and duration to the API. They do not prove the package's actual pixel output.
 
-A real render and human visual review are intentionally separate from the normal pull-request quality workflow. Remotion's current pricing distinguishes free individual/small-company use from its Automators offering for automated video products. Do not start an automated render until the project's actual license eligibility is clear; no render was executed as part of the static test suite.
+The normal pull-request quality workflow runs adapter-level integration tests and discovers this isolated composition, but does not render media. A real render and human visual review are intentionally separate from the normal pull-request quality workflow. Remotion's current pricing distinguishes free individual/small-company use from its Automators offering for automated video products. Do not start an automated render until the project's actual license eligibility is clear; no render was executed as part of the static test suite.
 
 ## Primary references
 
