@@ -16,7 +16,7 @@ export type MusicDuckingSettings = Readonly<{
   attackFrames: number;
   /** Ramp-up length after the final dialogue cue, in frames. */
   releaseFrames: number;
-  /** Frames before dialogue to begin ducking; defaults to attackFrames. */
+  /** Maximum lead-in window before dialogue; defaults to attackFrames. */
   preRollFrames?: number;
   /** Curve used for each ramp. Defaults to linear. */
   curve?: MusicDuckingCurve;
@@ -87,6 +87,7 @@ const validateSettings = (settings: MusicDuckingSettings) => {
 const normalizeRegions = (
   cues: readonly DialogueTimingCue[],
   preRollFrames: number,
+  attackFrames: number,
   releaseFrames: number,
 ): DuckingRegion[] => {
   if (!Array.isArray(cues)) {
@@ -112,7 +113,7 @@ const normalizeRegions = (
     }
 
     return {
-      start: Math.max(0, from - preRollFrames),
+      start: Math.max(0, from - Math.min(preRollFrames, attackFrames)),
       speechStart: from,
       speechEnd,
       end,
@@ -154,6 +155,7 @@ export const createMusicDuckingKeyframes = (
   const regions = normalizeRegions(
     cues,
     normalized.preRollFrames,
+    normalized.attackFrames,
     normalized.releaseFrames,
   );
 
@@ -184,10 +186,7 @@ export const createMusicDuckingKeyframes = (
   };
 
   for (const region of regions) {
-    const effectiveAttack = Math.min(
-      normalized.attackFrames,
-      region.speechStart - region.start,
-    );
+    const effectiveAttack = region.speechStart - region.start;
 
     if (inputRange.length === 0 && region.start > 0) {
       addPoint(0, normalized.baseVolume);
