@@ -118,6 +118,18 @@ test('allows separate cues to return to base volume between dialogue passages', 
   assert.equal(sample(100, keyframes), 0.08);
 });
 
+test('caps the attack ramp when the configured pre-roll window is longer', () => {
+  const keyframes = createMusicDuckingKeyframes(
+    [{from: 30, durationInFrames: 20}],
+    settings({attackFrames: 6, preRollFrames: 12}),
+  );
+
+  assert.deepEqual(keyframes.inputRange, [0, 24, 30, 50, 59]);
+  assert.equal(sample(21, keyframes), 0.24);
+  assert.equal(sample(27, keyframes), 0.16);
+  assert.equal(sample(30, keyframes), 0.08);
+});
+
 test('shortens attack to the available pre-roll at the start of a composition', () => {
   const keyframes = createMusicDuckingKeyframes(
     [{from: 3, durationInFrames: 12}],
