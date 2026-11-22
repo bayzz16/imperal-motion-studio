@@ -252,7 +252,7 @@ test('rejects empty or duplicate shot IDs', () => {
   );
 });
 
-test('rejects missing subject, action, and invalid optional scene ID', () => {
+test('rejects missing subject and action and normalizes optional scene metadata', () => {
   assert.throws(
     () => buildShotList(makeList([makeShot({subject: ' '})])),
     /subject must be a non-empty string/,
@@ -262,8 +262,12 @@ test('rejects missing subject, action, and invalid optional scene ID', () => {
     /action must be a non-empty string/,
   );
   assert.throws(
-    () => buildShotList(makeList([makeShot({sceneId: '  '})])),
-    /sceneId must be a non-empty string/,
+    () => buildShotList(makeList([makeShot({sceneId: 12})])),
+    /sceneId must be a string when provided/,
+  );
+  assert.equal(
+    buildShotList(makeList([makeShot({sceneId: '  '})])).shots[0].sceneId,
+    undefined,
   );
 });
 
