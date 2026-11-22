@@ -53,8 +53,8 @@ The values above are example starting points only, not a broadcast loudness stan
 
 ## Behavior and constraints
 
-- Cue positions and durations use the composition's zero-based frame clock.
-- The music starts at `baseVolume`, ramps toward `duckedVolume` before dialogue, stays reduced while dialogue is active, and recovers over `releaseFrames`.
+- Cue positions and durations use the component's zero-based local frame clock. If the component is nested in a Remotion Sequence, cue frames are relative to that Sequence.
+- The music starts at `baseVolume`, ramps toward `duckedVolume` before dialogue, stays reduced while dialogue is active, and recovers over `releaseFrames`. The attack length is capped by both `attackFrames` and `preRollFrames` (and by the available frames before the cue).
 - A new cue that overlaps an existing cue or its release window is merged to avoid music pumping between lines.
 - All volume values are constrained to 0–1, and `duckedVolume` cannot exceed `baseVolume`.
 - Linear and smoothstep curves are supported.
