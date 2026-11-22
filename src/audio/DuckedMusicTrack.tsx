@@ -11,7 +11,7 @@ import {
 export type DuckedMusicTrackProps = {
   /** Path relative to public/, for example audio/music-bed.wav. */
   src: string;
-  /** Manually aligned dialogue ranges on the same composition frame clock. */
+  /** Dialogue ranges on this component's local frame clock (including any parent Sequence offset). */
   dialogueCues: readonly DialogueTimingCue[];
   settings: MusicDuckingSettings;
   loop?: boolean;
