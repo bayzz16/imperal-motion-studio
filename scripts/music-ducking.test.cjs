@@ -35,7 +35,7 @@ const sample = (frame, keyframes) => {
   if (frame >= inputRange[inputRange.length - 1]) return outputRange[outputRange.length - 1];
 
   let index = 0;
-  while (frame > inputRange[index + 1]) index += 1;
+  while (frame >= inputRange[index + 1]) index += 1;
   const start = inputRange[index];
   const end = inputRange[index + 1];
   const progress = (frame - start) / (end - start);
