@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test scripts/*.test.cjs",
     "validate:render": "node scripts/validate-render.cjs",
+    "assets:validate": "node scripts/validate-assets.cjs",
     "check": "npm run typecheck && npm test && npm run compositions"
   },
   "dependencies": {
