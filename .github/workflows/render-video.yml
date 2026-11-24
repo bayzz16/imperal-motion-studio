@@ -21,6 +21,10 @@ on:
         required: true
         default: "tunas-dewa.mp4"
         type: string
+      asset_project_id:
+        description: "Base project workspace ID for asset validation. Defaults to composition_id; set this for aspect-ratio variants."
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -71,6 +75,7 @@ jobs:
       - name: Validate render inputs
         env:
           COMPOSITION_ID: ${{ inputs.composition_id || (contains(github.event.head_commit.message, '[render:saiful-sagita]') && 'SaifulSagita') || ((contains(github.event.head_commit.message, '[render:galaxy]') || contains(github.event.head_commit.message, '[test:galaxy]')) && 'GalaxyEducation') || (contains(github.event.head_commit.message, '[render:kyandra]') && 'KyandraRoast') || (contains(github.event.head_commit.message, '[render:trigonometri]') && 'TrigonometriPraktik') || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'ImperialSolTeaser') || (contains(github.event.head_commit.message, '[render:tunas-pohon]') && 'TunasPohon') || 'TunasDewa' }}
+          ASSET_PROJECT_ID: ${{ inputs.asset_project_id || '' }}
           OUTPUT_FILENAME: ${{ inputs.output_filename || (contains(github.event.head_commit.message, '[render:saiful-sagita]') && 'saiful-dan-sagita.mp4') || ((contains(github.event.head_commit.message, '[render:galaxy]') || contains(github.event.head_commit.message, '[test:galaxy]')) && 'tata-surya-bima-sakti.mp4') || (contains(github.event.head_commit.message, '[render:kyandra]') && 'kyandra-roast.mp4') || (contains(github.event.head_commit.message, '[render:trigonometri]') && 'praktik-trigonometri.mp4') || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'imperial-sol-teaser.mp4') || (contains(github.event.head_commit.message, '[render:tunas-pohon]') && 'tunas-pohon.mp4') || 'tunas-dewa.mp4' }}
         run: |
           if [[ ! "$COMPOSITION_ID" =~ ^[A-Za-z0-9_-]+$ ]]; then
@@ -81,6 +86,17 @@ jobs:
             echo "Filename must contain only letters, numbers, dash, underscore, and end in .mp4"
             exit 1
           fi
+          if [[ -z "$ASSET_PROJECT_ID" ]]; then
+            ASSET_PROJECT_ID="$COMPOSITION_ID"
+          fi
+          if [[ ! "$ASSET_PROJECT_ID" =~ ^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$ ]]; then
+            echo "Invalid asset project ID"
+            exit 1
+          fi
+          echo "ASSET_PROJECT_ID=$ASSET_PROJECT_ID" >> "$GITHUB_ENV"
+
+      - name: Validate project asset release readiness
+        run: node scripts/render-preflight.cjs "$ASSET_PROJECT_ID"
 
       - name: Install FFmpeg for narration assembly and duration measurement
         run: |
