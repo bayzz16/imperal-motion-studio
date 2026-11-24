@@ -6,7 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const {spawnSync} = require('node:child_process');
 const test = require('node:test');
-const {LEGACY_PROJECT_IDS, runRenderPreflight} = require('./render-preflight.cjs');
+const {COMPOSITION_FORMAT_SUFFIXES, LEGACY_PROJECT_IDS, resolveBaseProjectId, runRenderPreflight} = require('./render-preflight.cjs');
 
 const makeWorkspace = (projectId = 'SampleFilm') => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'imperal-render-preflight-'));
@@ -34,17 +34,39 @@ test('legacy projects without a workspace remain renderable during migration', (
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'imperal-legacy-'));
   try {
     assert.ok(LEGACY_PROJECT_IDS.has('TunasDewa'));
-    assert.equal(runRenderPreflight({projectId: 'TunasDewa', projectsRoot: path.join(root, 'missing')}).status, 'legacy-skip');
-    assert.equal(runRenderPreflight({projectId: 'TunasDewa', projectsRoot: root}).status, 'legacy-skip');
+    assert.equal(runRenderPreflight({compositionId: 'TunasDewa', projectsRoot: path.join(root, 'missing')}).status, 'legacy-skip');
+    assert.equal(runRenderPreflight({compositionId: 'TunasDewa', projectsRoot: root}).status, 'legacy-skip');
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
 });
 
+test('recognized aspect-ratio composition suffixes resolve to their base project', () => {
+  assert.deepEqual(COMPOSITION_FORMAT_SUFFIXES, [
+    '-YouTube-16x9',
+    '-Vertical-9x16',
+    '-Instagram-4x5',
+    '-Square-1x1',
+  ]);
+  assert.equal(resolveBaseProjectId('TunasDewa-YouTube-16x9'), 'TunasDewa');
+  assert.equal(resolveBaseProjectId('SaifulSagita-Vertical-9x16'), 'SaifulSagita');
+  assert.equal(runRenderPreflight({compositionId: 'TunasDewa-YouTube-16x9'}).status, 'legacy-skip');
+});
+
+test('an explicit asset project ID must match the base composition project', () => {
+  const result = runRenderPreflight({
+    compositionId: 'NewDocumentary',
+    assetProjectId: 'TunasDewa',
+    projectsRoot: '/does/not/matter',
+  });
+  assert.equal(result.status, 'blocked');
+  assert.ok(result.errors.some((item) => item.code === 'project.mapping-mismatch'));
+});
+
 test('new projects without a workspace or manifest are blocked', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'imperal-new-project-'));
   try {
-    const result = runRenderPreflight({projectId: 'NewDocumentary', projectsRoot: root});
+    const result = runRenderPreflight({compositionId: 'NewDocumentary', projectsRoot: root});
     assert.equal(result.status, 'blocked');
     assert.ok(result.errors.some((item) => item.code === 'manifest.required'));
   } finally {
@@ -54,10 +76,9 @@ test('new projects without a workspace or manifest are blocked', () => {
 
 test('a workspace that has opted into project assets must contain a manifest', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'imperal-incomplete-project-'));
-  const projectRoot = path.join(root, 'NewFilm');
-  fs.mkdirSync(projectRoot, {recursive: true});
+  fs.mkdirSync(path.join(root, 'NewFilm'), {recursive: true});
   try {
-    const result = runRenderPreflight({projectId: 'NewFilm', projectsRoot: root});
+    const result = runRenderPreflight({compositionId: 'NewFilm', projectsRoot: root});
     assert.equal(result.status, 'blocked');
     assert.ok(result.errors.some((item) => item.code === 'manifest.missing'));
   } finally {
@@ -68,7 +89,7 @@ test('a workspace that has opted into project assets must contain a manifest', (
 test('reviewed project assets pass the release preflight', () => {
   const fixture = makeWorkspace();
   try {
-    const result = runRenderPreflight({projectId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
+    const result = runRenderPreflight({compositionId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
     assert.equal(result.status, 'passed');
     assert.deepEqual(result.errors, []);
   } finally {
@@ -81,7 +102,7 @@ test('pending rights review blocks release before the render step', () => {
   try {
     fixture.manifest.assets[0].rights.reviewStatus = 'pending';
     fs.writeFileSync(fixture.manifestPath, JSON.stringify(fixture.manifest));
-    const result = runRenderPreflight({projectId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
+    const result = runRenderPreflight({compositionId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
     assert.equal(result.status, 'blocked');
     assert.ok(result.errors.some((item) => item.code === 'asset.review-pending'));
   } finally {
@@ -94,7 +115,7 @@ test('blocked rights status always prevents release', () => {
   try {
     fixture.manifest.assets[0].rights.reviewStatus = 'blocked';
     fs.writeFileSync(fixture.manifestPath, JSON.stringify(fixture.manifest));
-    const result = runRenderPreflight({projectId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
+    const result = runRenderPreflight({compositionId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
     assert.equal(result.status, 'blocked');
     assert.ok(result.errors.some((item) => item.code === 'asset.blocked'));
   } finally {
@@ -107,7 +128,7 @@ test('manifest project identity must match the selected project workspace', () =
   try {
     fixture.manifest.projectId = 'OtherProject';
     fs.writeFileSync(fixture.manifestPath, JSON.stringify(fixture.manifest));
-    const result = runRenderPreflight({projectId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
+    const result = runRenderPreflight({compositionId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
     assert.equal(result.status, 'blocked');
     assert.ok(result.errors.some((item) => item.code === 'manifest.project-mismatch'));
   } finally {
@@ -120,7 +141,7 @@ test('missing referenced files prevent release', () => {
   try {
     fixture.manifest.assets[0].path = 'assets/missing.svg';
     fs.writeFileSync(fixture.manifestPath, JSON.stringify(fixture.manifest));
-    const result = runRenderPreflight({projectId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
+    const result = runRenderPreflight({compositionId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
     assert.equal(result.status, 'blocked');
     assert.ok(result.errors.some((item) => item.code === 'asset.file'));
   } finally {
@@ -136,7 +157,7 @@ test('project workspace symlinks are rejected', () => {
   fs.mkdirSync(outside);
   fs.symlinkSync(outside, path.join(projectsRoot, 'SampleFilm'), 'dir');
   try {
-    const result = runRenderPreflight({projectId: 'SampleFilm', projectsRoot});
+    const result = runRenderPreflight({compositionId: 'SampleFilm', projectsRoot});
     assert.equal(result.status, 'blocked');
     assert.ok(result.errors.some((item) => item.code === 'project.type'));
   } finally {
@@ -151,7 +172,7 @@ test('manifest symlinks are rejected', () => {
   fs.rmSync(fixture.manifestPath);
   fs.symlinkSync(outside, fixture.manifestPath);
   try {
-    const result = runRenderPreflight({projectId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
+    const result = runRenderPreflight({compositionId: 'SampleFilm', projectsRoot: fixture.projectsRoot});
     assert.equal(result.status, 'blocked');
     assert.ok(result.errors.some((item) => item.code === 'manifest.type'));
   } finally {
@@ -159,10 +180,10 @@ test('manifest symlinks are rejected', () => {
   }
 });
 
-test('invalid project IDs are rejected before filesystem access', () => {
-  const result = runRenderPreflight({projectId: '../TunasDewa', projectsRoot: '/does/not/matter'});
+test('invalid composition IDs are rejected before filesystem access', () => {
+  const result = runRenderPreflight({compositionId: '../TunasDewa', projectsRoot: '/does/not/matter'});
   assert.equal(result.status, 'blocked');
-  assert.ok(result.errors.some((item) => item.code === 'project.id'));
+  assert.ok(result.errors.some((item) => item.code === 'composition.id'));
 });
 
 test('CLI exits successfully for an allowlisted legacy project', () => {
@@ -176,7 +197,6 @@ test('CLI exits successfully for an allowlisted legacy project', () => {
     fs.rmSync(temp, {recursive: true, force: true});
   }
 });
-
 
 test('CLI exits non-zero for a pending project manifest', () => {
   const fixture = makeWorkspace();
@@ -195,7 +215,7 @@ test('CLI exits non-zero for a pending project manifest', () => {
 test('render workflow runs the asset gate before dependency setup, media generation and MP4 rendering', () => {
   const workflowPath = path.join(__dirname, '..', '.github', 'workflows', 'render-video.yml');
   const workflow = fs.readFileSync(workflowPath, 'utf8');
-  const preflight = workflow.indexOf('node scripts/render-preflight.cjs "$ASSET_PROJECT_ID"');
+  const preflight = workflow.indexOf('node scripts/render-preflight.cjs "$COMPOSITION_ID" "$ASSET_PROJECT_ID"');
   const python = workflow.indexOf('      - name: Set up Python for neural narration');
   const ttsInstall = workflow.indexOf('      - name: Install neural Indonesian TTS');
   const ffmpeg = workflow.indexOf('      - name: Install FFmpeg for narration assembly and duration measurement');
