@@ -25,6 +25,7 @@ All projects are separate Remotion compositions registered in `src/projects/regi
 - Reusable animated celestial-body visuals (axial rotation, surface shading, atmosphere, clouds, and ring layers) in `src/visual/`, now used by Galaxy Education.
 - Shared cinematic finishing layer applied to every registered composition: subtle camera movement, restrained color grade, vignette, and low-opacity film texture.
 - Extended MP4 quality checks for audio/video presence, dimensions, frame rate, A/V duration drift, full-stream decoding, possible black/frozen sections, and measured audio volume.
+- EBU R 128 programme loudness, loudness-range, and true-peak diagnostics during MP4 validation; advisory only, with no automatic normalization or universal platform target.
 - Motion regression tests plus MP4 validation for video/audio streams, duration, dimensions, frame rate, A/V drift, and full-stream decode diagnostics.
 - GitHub Actions rendering to MP4, with downloadable artifacts retained for 14 days.
 
@@ -63,7 +64,7 @@ GitHub Actions selects a conservative render profile from the runner's available
 
 Profiles range from standard (1x) through balanced (1.25x), high (1.5x), and ultra (2x). Scaling increases output dimensions and can improve vector/text rasterization detail; it does not create new source-image detail, and it increases render cost. The workflow also uses H.264 CRF 18 and a high JPEG frame quality setting.
 
-The profile resolver is covered by unit tests in `scripts/render-profile.test.cjs`. Its thresholds are resource heuristics, not a guarantee that every render will fit available memory. The shared cinematic finish is tested in `scripts/cinematic-style.test.cjs`; media metadata and quality-log parsing are tested in `scripts/validate-render.test.cjs`. The full-stream black/freeze scan is advisory because intentional fades and static shots can trigger detections.
+The profile resolver is covered by unit tests in `scripts/render-profile.test.cjs`. Its thresholds are resource heuristics, not a guarantee that every render will fit available memory. The shared cinematic finish is tested in `scripts/cinematic-style.test.cjs`; media metadata and quality-log parsing are tested in `scripts/validate-render.test.cjs`. The full-stream black/freeze scan is advisory because intentional fades and static shots can trigger detections. Audio loudness measurement is documented in [docs/audio-loudness-qc.md](docs/audio-loudness-qc.md).
 
 ## Validate changes
 
