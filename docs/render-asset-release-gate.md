@@ -1,6 +1,6 @@
 # Render asset release gate
 
-The GitHub Actions render workflow checks project asset metadata and local files before it installs FFmpeg, generates shared audio, requests narration, or starts an MP4 render.
+The GitHub Actions render workflow checks project asset metadata and local files before it sets up the TTS environment, installs FFmpeg, generates shared audio, requests narration, or starts an MP4 render.
 
 This is a production-safety gate, not a rights database, legal opinion, or proof that a particular asset is permitted for a specific use.
 
@@ -33,7 +33,7 @@ The following existing projects are temporarily allowlisted because they predate
 - **SaifulSagita**
 - **ImperialSolTeaser**
 
-For an allowlisted project with no **public/projects/<ProjectId>/** directory, the gate reports a legacy skip and allows the existing render workflow to continue. Existing assets are not moved, copied, or retroactively assigned rights metadata.
+For an allowlisted project with no **public/projects/ProjectId/** directory, the gate reports a legacy skip and allows the existing render workflow to continue. Existing assets are not moved, copied, or retroactively assigned rights metadata.
 
 For a non-legacy project ID without a workspace, the gate blocks rendering. If any project workspace directory exists, it must contain a regular **asset-manifest.json**; a missing or symlinked manifest is an error. This prevents an incomplete new workspace from silently bypassing the release check.
 
@@ -57,6 +57,7 @@ A successful result means the recorded metadata and local files passed the confi
 
 The gate runs after dependency installation, static validation, unit tests, and Remotion composition discovery, but before:
 
+- Python setup and neural TTS package installation
 - FFmpeg installation for media assembly
 - Shared music and sound-effect generation
 - Composition-specific neural narration generation
