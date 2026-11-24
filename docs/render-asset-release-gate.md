@@ -75,3 +75,10 @@ A gate failure therefore stops the render job before media-generation or render 
 - Pending or blocked rights review: fail.
 - Wrong project ID, malformed JSON, missing file, unsafe path, project symlink, or manifest symlink: fail.
 - CI confirms the gate command appears before narration generation and the MP4 render step.
+
+
+## Avoiding automatic renders for infrastructure-only commits
+
+The render job runs on pushes by default, as configured by the existing workflow. For a commit that changes tooling or workflow code but should not automatically generate a video, include **[skip-render]** in the commit message. The render job is skipped for that push. A manual **workflow_dispatch** run remains available and is not suppressed by this marker.
+
+This marker prevents an infrastructure merge from unexpectedly starting TTS generation and an MP4 render. It does not disable the render workflow or change the behavior of ordinary content commits.
