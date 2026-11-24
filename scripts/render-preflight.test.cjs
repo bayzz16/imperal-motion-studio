@@ -177,14 +177,38 @@ test('CLI exits successfully for an allowlisted legacy project', () => {
   }
 });
 
-test('render workflow runs the asset gate before narration generation and MP4 rendering', () => {
+
+test('CLI exits non-zero for a pending project manifest', () => {
+  const fixture = makeWorkspace();
+  try {
+    fixture.manifest.assets[0].rights.reviewStatus = 'pending';
+    fs.writeFileSync(fixture.manifestPath, JSON.stringify(fixture.manifest));
+    const cli = path.join(__dirname, 'render-preflight.cjs');
+    const result = spawnSync(process.execPath, [cli, 'SampleFilm'], {cwd: fixture.temp, encoding: 'utf8'});
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /asset.review-pending/);
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test('render workflow runs the asset gate before dependency setup, media generation and MP4 rendering', () => {
   const workflowPath = path.join(__dirname, '..', '.github', 'workflows', 'render-video.yml');
   const workflow = fs.readFileSync(workflowPath, 'utf8');
   const preflight = workflow.indexOf('node scripts/render-preflight.cjs "$ASSET_PROJECT_ID"');
-  const narration = workflow.indexOf('Generate composition-specific Indonesian neural narration');
+  const python = workflow.indexOf('      - name: Set up Python for neural narration');
+  const ttsInstall = workflow.indexOf('      - name: Install neural Indonesian TTS');
+  const ffmpeg = workflow.indexOf('      - name: Install FFmpeg for narration assembly and duration measurement');
+  const audio = workflow.indexOf('      - name: Generate original music and sound effects');
+  const narration = workflow.indexOf('      - name: Generate composition-specific Indonesian neural narration');
   const render = workflow.indexOf('      - name: Render MP4');
   assert.ok(preflight >= 0, 'preflight command is missing');
-  assert.ok(narration > preflight, 'preflight must precede narration generation');
-  assert.ok(render > narration, 'preflight must precede MP4 rendering');
+  assert.ok(python > preflight, 'preflight must precede Python setup');
+  assert.ok(ttsInstall > python, 'Python setup must precede TTS installation');
+  assert.ok(ffmpeg > ttsInstall, 'preflight must precede FFmpeg installation');
+  assert.ok(audio > ffmpeg, 'FFmpeg installation must precede audio generation');
+  assert.ok(narration > audio, 'audio generation must precede narration generation');
+  assert.ok(render > narration, 'narration generation must precede MP4 rendering');
   assert.match(workflow, /asset_project_id:[\s\S]*?required: false/);
+  assert.match(workflow, /ASSET_PROJECT_ID="\$COMPOSITION_ID"/);
 });
