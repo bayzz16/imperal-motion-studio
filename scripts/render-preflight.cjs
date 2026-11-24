@@ -4,6 +4,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {validateManifestFiles} = require('./validate-assets.cjs');
 
+// Keep these suffixes aligned with OUTPUT_FORMATS in src/Root.tsx.
+const COMPOSITION_FORMAT_SUFFIXES = [
+  '-YouTube-16x9',
+  '-Vertical-9x16',
+  '-Instagram-4x5',
+  '-Square-1x1',
+];
+
 // These projects predate the per-project manifest migration. Remove an ID
 // from this set only after its workspace has a reviewed asset-manifest.json.
 const LEGACY_PROJECT_IDS = new Set([
@@ -29,6 +37,15 @@ const blocked = (projectId, code, message) => ({
   warnings: [],
 });
 
+const resolveBaseProjectId = (compositionId) => {
+  if (typeof compositionId !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(compositionId)) {
+    return null;
+  }
+  const suffix = COMPOSITION_FORMAT_SUFFIXES.find((item) => compositionId.endsWith(item));
+  const projectId = suffix ? compositionId.slice(0, -suffix.length) : compositionId;
+  return /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(projectId) ? projectId : null;
+};
+
 const legacyOrRequired = (projectId) => LEGACY_PROJECT_IDS.has(projectId)
   ? {status: 'legacy-skip', projectId, errors: [], warnings: []}
   : blocked(
@@ -38,11 +55,25 @@ const legacyOrRequired = (projectId) => LEGACY_PROJECT_IDS.has(projectId)
   );
 
 const runRenderPreflight = ({
-  projectId,
+  compositionId,
+  assetProjectId,
   projectsRoot = path.join(process.cwd(), 'public', 'projects'),
 } = {}) => {
-  if (typeof projectId !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(projectId)) {
-    return blocked(projectId, 'project.id', 'Project ID must be a 1–64 character alphanumeric ID with hyphens or underscores.');
+  const projectId = resolveBaseProjectId(compositionId);
+  if (!projectId) {
+    return blocked(compositionId, 'composition.id', 'Composition ID is invalid or does not resolve to a supported 1–64 character project ID.');
+  }
+  if (assetProjectId !== undefined && assetProjectId !== '') {
+    if (typeof assetProjectId !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(assetProjectId)) {
+      return blocked(projectId, 'project.id', 'Asset project ID must be a 1–64 character alphanumeric ID with hyphens or underscores.');
+    }
+    if (assetProjectId !== projectId) {
+      return blocked(
+        projectId,
+        'project.mapping-mismatch',
+        'asset_project_id must match the base project resolved from composition_id (' + projectId + ').',
+      );
+    }
   }
 
   const rootPath = path.resolve(projectsRoot);
@@ -131,8 +162,10 @@ const runRenderPreflight = ({
 
 const main = () => {
   const args = process.argv.slice(2);
-  if (args.length !== 1) throw new Error('Usage: node scripts/render-preflight.cjs <project-id>');
-  const result = runRenderPreflight({projectId: args[0]});
+  if (args.length < 1 || args.length > 2) {
+    throw new Error('Usage: node scripts/render-preflight.cjs <composition-id> [asset-project-id]');
+  }
+  const result = runRenderPreflight({compositionId: args[0], assetProjectId: args[1]});
   if (result.status === 'legacy-skip') {
     console.log('LEGACY PROJECT: asset manifest not required yet for ' + result.projectId + '; render preflight skipped.');
     return;
@@ -152,4 +185,4 @@ if (require.main === module) {
   try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
 
-module.exports = {LEGACY_PROJECT_IDS, isContained, runRenderPreflight};
+module.exports = {COMPOSITION_FORMAT_SUFFIXES, LEGACY_PROJECT_IDS, isContained, resolveBaseProjectId, runRenderPreflight};
