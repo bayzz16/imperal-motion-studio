@@ -22,7 +22,7 @@ on:
         default: "tunas-dewa.mp4"
         type: string
       asset_project_id:
-        description: "Base project workspace ID for asset validation. Defaults to composition_id; set this for aspect-ratio variants."
+        description: "Optional base project ID override; it must match the composition ID or its recognized aspect-ratio variant."
         required: false
         type: string
 
@@ -76,17 +76,15 @@ jobs:
             echo "Filename must contain only letters, numbers, dash, underscore, and end in .mp4"
             exit 1
           fi
-          if [[ -z "$ASSET_PROJECT_ID" ]]; then
-            ASSET_PROJECT_ID="$COMPOSITION_ID"
-          fi
-          if [[ ! "$ASSET_PROJECT_ID" =~ ^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$ ]]; then
+          if [[ -n "$ASSET_PROJECT_ID" && ! "$ASSET_PROJECT_ID" =~ ^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$ ]]; then
             echo "Invalid asset project ID"
             exit 1
           fi
+          echo "COMPOSITION_ID=$COMPOSITION_ID" >> "$GITHUB_ENV"
           echo "ASSET_PROJECT_ID=$ASSET_PROJECT_ID" >> "$GITHUB_ENV"
 
       - name: Validate project asset release readiness
-        run: node scripts/render-preflight.cjs "$ASSET_PROJECT_ID"
+        run: node scripts/render-preflight.cjs "$COMPOSITION_ID" "$ASSET_PROJECT_ID"
 
       - name: Set up Python for neural narration
         uses: actions/setup-python@v5
