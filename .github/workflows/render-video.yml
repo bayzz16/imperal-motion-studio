@@ -21,6 +21,10 @@ on:
         required: true
         default: "tunas-dewa.mp4"
         type: string
+      asset_project_id:
+        description: "Optional base project ID override; it must match the composition ID or its recognized aspect-ratio variant."
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -31,6 +35,7 @@ concurrency:
 
 jobs:
   render:
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip-render]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -41,17 +46,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Set up Python for neural narration
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install neural Indonesian TTS
-        run: |
-          python -m venv .venv-tts
-          .venv-tts/bin/python -m pip install --upgrade pip
-          .venv-tts/bin/python -m pip install edge-tts==7.3.1
 
       - name: Install dependencies
         run: npm install
@@ -71,6 +65,7 @@ jobs:
       - name: Validate render inputs
         env:
           COMPOSITION_ID: ${{ inputs.composition_id || (contains(github.event.head_commit.message, '[render:saiful-sagita]') && 'SaifulSagita') || ((contains(github.event.head_commit.message, '[render:galaxy]') || contains(github.event.head_commit.message, '[test:galaxy]')) && 'GalaxyEducation') || (contains(github.event.head_commit.message, '[render:kyandra]') && 'KyandraRoast') || (contains(github.event.head_commit.message, '[render:trigonometri]') && 'TrigonometriPraktik') || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'ImperialSolTeaser') || (contains(github.event.head_commit.message, '[render:tunas-pohon]') && 'TunasPohon') || 'TunasDewa' }}
+          ASSET_PROJECT_ID: ${{ inputs.asset_project_id || '' }}
           OUTPUT_FILENAME: ${{ inputs.output_filename || (contains(github.event.head_commit.message, '[render:saiful-sagita]') && 'saiful-dan-sagita.mp4') || ((contains(github.event.head_commit.message, '[render:galaxy]') || contains(github.event.head_commit.message, '[test:galaxy]')) && 'tata-surya-bima-sakti.mp4') || (contains(github.event.head_commit.message, '[render:kyandra]') && 'kyandra-roast.mp4') || (contains(github.event.head_commit.message, '[render:trigonometri]') && 'praktik-trigonometri.mp4') || (contains(github.event.head_commit.message, '[render:imperial-sol]') && 'imperial-sol-teaser.mp4') || (contains(github.event.head_commit.message, '[render:tunas-pohon]') && 'tunas-pohon.mp4') || 'tunas-dewa.mp4' }}
         run: |
           if [[ ! "$COMPOSITION_ID" =~ ^[A-Za-z0-9_-]+$ ]]; then
@@ -81,6 +76,26 @@ jobs:
             echo "Filename must contain only letters, numbers, dash, underscore, and end in .mp4"
             exit 1
           fi
+          if [[ -n "$ASSET_PROJECT_ID" && ! "$ASSET_PROJECT_ID" =~ ^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$ ]]; then
+            echo "Invalid asset project ID"
+            exit 1
+          fi
+          echo "COMPOSITION_ID=$COMPOSITION_ID" >> "$GITHUB_ENV"
+          echo "ASSET_PROJECT_ID=$ASSET_PROJECT_ID" >> "$GITHUB_ENV"
+
+      - name: Validate project asset release readiness
+        run: node scripts/render-preflight.cjs "$COMPOSITION_ID" "$ASSET_PROJECT_ID"
+
+      - name: Set up Python for neural narration
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install neural Indonesian TTS
+        run: |
+          python -m venv .venv-tts
+          .venv-tts/bin/python -m pip install --upgrade pip
+          .venv-tts/bin/python -m pip install edge-tts==7.3.1
 
       - name: Install FFmpeg for narration assembly and duration measurement
         run: |

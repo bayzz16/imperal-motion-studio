@@ -12,6 +12,7 @@
     "test": "node --test scripts/*.test.cjs",
     "validate:render": "node scripts/validate-render.cjs",
     "assets:validate": "node scripts/validate-assets.cjs",
+    "assets:preflight": "node scripts/render-preflight.cjs",
     "check": "npm run typecheck && npm test && npm run compositions"
   },
   "dependencies": {
