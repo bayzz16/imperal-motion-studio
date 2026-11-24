@@ -14,10 +14,11 @@ The sources were checked on 24 November 2026. The Remotion render overview ident
 
 ## Project ID selection
 
-The render workflow accepts an optional **asset_project_id** input:
+The render workflow accepts an optional **asset_project_id** input. It is checked against the base project resolved from the composition ID:
 
-- If omitted, it uses the selected **composition_id**.
-- If a composition is an aspect-ratio variant such as **TunasDewa-YouTube-16x9**, provide the base project ID, for example **TunasDewa**.
+- If omitted, the preflight resolves the base project ID from the composition ID.
+- It recognizes the same suffixes declared in **OUTPUT_FORMATS** in **src/Root.tsx**: **YouTube-16x9**, **Vertical-9x16**, **Instagram-4x5**, and **Square-1x1**.
+- If supplied, **asset_project_id** must exactly match the resolved base project ID; it cannot be used to point a new composition at an unrelated legacy project.
 - The ID must be 1–64 characters and contain only letters, numbers, hyphens, and underscores.
 
 ## Backward-compatible migration
@@ -38,6 +39,17 @@ For an allowlisted project with no **public/projects/ProjectId/** directory, the
 For a non-legacy project ID without a workspace, the gate blocks rendering. If any project workspace directory exists, it must contain a regular **asset-manifest.json**; a missing or symlinked manifest is an error. This prevents an incomplete new workspace from silently bypassing the release check.
 
 After a legacy project is migrated, create and review its project manifest, then remove its ID from **LEGACY_PROJECT_IDS** in **scripts/render-preflight.cjs**. Do not remove an ID before its manifest and referenced files have been checked.
+
+## Run the preflight locally
+
+Use the same check without starting a render:
+
+~~~bash
+npm run assets:preflight -- TunasDewa
+npm run assets:preflight -- TunasDewa-YouTube-16x9 TunasDewa
+~~~
+
+The second form is useful when explicitly supplying a base project ID for a composition variant. The override must match the base ID inferred from the registered aspect-ratio suffix.
 
 ## Validation behavior
 
