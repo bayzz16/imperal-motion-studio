@@ -230,6 +230,7 @@ test('render workflow runs the asset gate before dependency setup, media generat
   assert.ok(narration > audio, 'audio generation must precede narration generation');
   assert.ok(render > narration, 'narration generation must precede MP4 rendering');
   assert.match(workflow, /asset_project_id:[\s\S]*?required: false/);
-  assert.match(workflow, /ASSET_PROJECT_ID="\$COMPOSITION_ID"/);
+  assert.match(workflow, /echo "COMPOSITION_ID=\$COMPOSITION_ID" >> "\$GITHUB_ENV"/);
+  assert.match(workflow, /echo "ASSET_PROJECT_ID=\$ASSET_PROJECT_ID" >> "\$GITHUB_ENV"/);
   assert.match(workflow, /if: \$\{\{ github\.event_name == 'workflow_dispatch' \|\| !contains\(github\.event\.head_commit\.message, '\[skip-render\]'\) \}\}/);
 });
