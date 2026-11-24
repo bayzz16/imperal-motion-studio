@@ -46,17 +46,6 @@ jobs:
         with:
           node-version: 22
 
-      - name: Set up Python for neural narration
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install neural Indonesian TTS
-        run: |
-          python -m venv .venv-tts
-          .venv-tts/bin/python -m pip install --upgrade pip
-          .venv-tts/bin/python -m pip install edge-tts==7.3.1
-
       - name: Install dependencies
         run: npm install
 
@@ -97,6 +86,17 @@ jobs:
 
       - name: Validate project asset release readiness
         run: node scripts/render-preflight.cjs "$ASSET_PROJECT_ID"
+
+      - name: Set up Python for neural narration
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install neural Indonesian TTS
+        run: |
+          python -m venv .venv-tts
+          .venv-tts/bin/python -m pip install --upgrade pip
+          .venv-tts/bin/python -m pip install edge-tts==7.3.1
 
       - name: Install FFmpeg for narration assembly and duration measurement
         run: |
