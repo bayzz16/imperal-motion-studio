@@ -45,10 +45,12 @@ function validateWebVtt(input, options = {}) {
       if (!identifier || identifier.includes('-->')) {
         errors.push({code: 'cue.identifier', line: lineNumber, message: 'Invalid cue identifier.'});
       }
-      if (identifiers.has(identifier)) {
-        errors.push({code: 'cue.identifier.duplicate', line: lineNumber, message: 'Cue identifiers must be unique.'});
+      if (identifier !== null) {
+        if (identifiers.has(identifier)) {
+          errors.push({code: 'cue.identifier.duplicate', line: lineNumber, message: 'Cue identifiers must be unique.'});
+        }
+        identifiers.add(identifier);
       }
-      identifiers.add(identifier);
       index++;
       if (index >= lines.length) {
         errors.push({code: 'cue.timing.missing', line: lineNumber, message: 'Cue identifier is not followed by timing.'});
