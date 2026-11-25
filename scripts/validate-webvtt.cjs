@@ -2,16 +2,14 @@
 
 const fs = require('node:fs');
 
-const TIMESTAMP = /^(?:(\\d{2,}):)?([0-5]\\d):([0-5]\\d)\\.(\\d{3})$/;
+const TIMESTAMP = /^(?:(\d{2,}):)?([0-5]\d):([0-5]\d)\.(\d{3})$/;
 
 function parseTimestamp(value) {
+  if (typeof value !== 'string') return null;
   const match = TIMESTAMP.exec(value);
   if (!match) return null;
   const hours = match[1] === undefined ? 0 : Number(match[1]);
-  const minutes = Number(match[2]);
-  const seconds = Number(match[3]);
-  const milliseconds = Number(match[4]);
-  const total = ((hours * 60 + minutes) * 60 + seconds) * 1000 + milliseconds;
+  const total = ((hours * 60 + Number(match[2])) * 60 + Number(match[3])) * 1000 + Number(match[4]);
   return Number.isSafeInteger(total) ? total : null;
 }
 
@@ -22,9 +20,9 @@ function validateWebVtt(input, options = {}) {
     return {valid: false, cueCount: 0, errors: [{code: 'input.type', message: 'WebVTT input must be text.'}], warnings};
   }
 
-  const text = input.replace(/^\\uFEFF/, '').replace(/\\r\\n?/g, '\\n');
-  const lines = text.split('\\n');
-  if (lines[0] !== 'WEBVTT' && !/^WEBVTT(?:[ \\t].*)?$/.test(lines[0] || '')) {
+  const text = input.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+  const lines = text.split('\n');
+  if (lines[0] !== 'WEBVTT' && !/^WEBVTT(?:[ \t].*)?$/.test(lines[0] || '')) {
     errors.push({code: 'header.missing', line: 1, message: 'File must begin with WEBVTT header.'});
   }
 
@@ -36,7 +34,7 @@ function validateWebVtt(input, options = {}) {
     while (index < lines.length && lines[index].trim() === '') index++;
     if (index >= lines.length) break;
     const lineNumber = index + 1;
-    if (/^(NOTE|STYLE|REGION)(?:[ \\t]|$)/.test(lines[index])) {
+    if (/^(NOTE|STYLE|REGION)(?:[ \t]|$)/.test(lines[index])) {
       while (index < lines.length && lines[index].trim() !== '') index++;
       continue;
     }
@@ -60,7 +58,7 @@ function validateWebVtt(input, options = {}) {
 
     const timingLine = lines[index];
     const timingLineNumber = index + 1;
-    const timing = /^(\\S+)\\s+-->\\s+(\\S+)(?:[ \\t]+(.*))?$/.exec(timingLine);
+    const timing = /^(\S+)\s+-->\s+(\S+)(?:[ \t]+(.*))?$/.exec(timingLine);
     if (!timing) {
       errors.push({code: 'cue.timing.invalid', line: timingLineNumber, message: 'Invalid cue timing line.'});
       while (index < lines.length && lines[index].trim() !== '') index++;
@@ -95,7 +93,6 @@ function validateWebVtt(input, options = {}) {
       if (cue.endMs > options.durationMs) warnings.push({code: 'cue.outside.duration', line: cue.line, message: 'Cue ends after the supplied media duration.'});
     }
   }
-
   return {valid: errors.length === 0, cueCount: cues.length, errors, warnings};
 }
 
