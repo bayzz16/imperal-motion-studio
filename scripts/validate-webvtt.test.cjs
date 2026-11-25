@@ -29,6 +29,7 @@ test('requires end after start and ordered cue starts', () => {
 test('allows overlaps but rejects duplicate identifiers and empty payload', () => {
   const overlap = 'WEBVTT\n\nA\n00:00.000 --> 00:03.000\nFirst\n\nB\n00:01.000 --> 00:04.000\nSecond';
   assert.equal(validateWebVtt(overlap).valid, true);
+  assert.equal(validateWebVtt('WEBVTT\\n\\n00:00.000 --> 00:01.000\\nFirst\\n\\n00:01.000 --> 00:02.000\\nSecond').valid, true);
   const duplicate = 'WEBVTT\n\nA\n00:00.000 --> 00:01.000\nOne\n\nA\n00:01.000 --> 00:02.000\nTwo';
   assert.ok(validateWebVtt(duplicate).errors.some(e => e.code === 'cue.identifier.duplicate'));
   assert.ok(validateWebVtt('WEBVTT\n\n00:00.000 --> 00:01.000\n').errors.some(e => e.code === 'cue.payload.empty'));
