@@ -13,7 +13,8 @@
     "validate:render": "node scripts/validate-render.cjs",
     "assets:validate": "node scripts/validate-assets.cjs",
     "assets:preflight": "node scripts/render-preflight.cjs",
-    "check": "npm run typecheck && npm test && npm run compositions"
+    "check": "npm run typecheck && npm test && npm run compositions",
+    "captions:validate": "node scripts/validate-webvtt.cjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.543",
