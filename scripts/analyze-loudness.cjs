@@ -81,7 +81,7 @@ function analyzeFile(file, targets = DEFAULTS, options = {}) {
   const checked = validateTargets(targets);
   const filter = buildFilter(checked);
   const result = spawnSync(options.ffmpegPath || 'ffmpeg', [
-    '-hide_banner', '-nostats', '-i', absolute,
+    '-hide_banner', '-nostats', '-i', absolute, '-vn',
     '-af', filter, '-f', 'null', '-',
   ], {encoding: 'utf8', maxBuffer: 8 * 1024 * 1024});
   if (result.error) throw new Error('Could not run FFmpeg: ' + result.error.message);
