@@ -167,6 +167,10 @@ const captions = parseCaptionFile(subtitleText, 'vtt'); // or 'srt'
 
 `CaptionTrack` selects cues from the current Remotion frame, stacks overlapping cues, and keeps text inside configurable canvas-relative safe areas. Defaults reserve 8% horizontally and 12% at the bottom. The background, text color, and font size can be adjusted per project. If subtitle text is fetched asynchronously inside a composition, use Remotion's `useDelayRender()` pattern so rendering waits for the file to load.
 
+## Dialogue-driven music ducking
+
+Reusable frame-based music ducking is available through `src/audio/DuckedMusicTrack.tsx`. Projects provide their own dialogue cue frame ranges and volume settings; the helper merges overlapping cues and applies attack/release envelopes. It does not perform waveform analysis or LUFS normalization. See [dialogue-driven music ducking](docs/dialogue-driven-music-ducking.md).
+
 ## Dialogue voice library
 
 The reusable voice library lives in `src/voice/`. It contains voice-profile metadata and a playback component for prepared recordings. Each composition can use its own generated narration MP3.
