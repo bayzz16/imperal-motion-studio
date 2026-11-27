@@ -7,7 +7,7 @@ const {parseRational, validateProbeData, parseQualityDiagnostics} = require('./v
 const validProbe = () => ({
   format: {duration: '10.000'},
   streams: [
-    {codec_type: 'video', codec_name: 'h264', width: 1080, height: 1920, duration: '10.000', avg_frame_rate: '30/1'},
+    {codec_type: 'video', codec_name: 'h264', width: 1080, height: 1920, duration: '10.000', avg_frame_rate: '30/1', pix_fmt: 'yuv420p', bits_per_raw_sample: '8', color_range: 'tv', color_primaries: 'bt709', color_transfer: 'bt709', color_space: 'bt709'},
     {codec_type: 'audio', codec_name: 'aac', duration: '9.980'},
   ],
 });
@@ -24,6 +24,17 @@ test('validates video, audio, dimensions, duration and frame rate', () => {
   assert.equal(result.height, 1920);
   assert.equal(result.fps, 30);
   assert.ok(Math.abs(result.avDriftSeconds - 0.02) < 1e-9);
+  assert.equal(result.color.classification, 'sdr-bt709');
+  assert.equal(result.color.status, 'ok');
+});
+
+test('allows explicit color delivery profiles without changing the source metadata', () => {
+  const data = validProbe();
+  data.streams[0].color_range = 'pc';
+  const result = validateProbeData(data, {colorProfile: 'youtube-sdr'});
+  assert.equal(result.color.profile, 'youtube-sdr');
+  assert.ok(result.color.warnings.some((warning) => warning.includes('Full-range')));
+  assert.equal(data.streams[0].color_range, 'pc');
 });
 
 test('rejects missing streams, invalid frame rates and excessive A/V drift', () => {
