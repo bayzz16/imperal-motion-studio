@@ -7,7 +7,7 @@ const {
 } = require('./analyze-subtitle-cps.cjs');
 
 const vtt = (text, start = '00:00.000', end = '00:01.000') =>
-  'WEBVTT\\n\\n' + start + ' --> ' + end + '\\n' + text + '\\n';
+  'WEBVTT\n\n' + start + ' --> ' + end + '\n' + text + '\n';
 
 test('uses conservative adult and children CPS profiles', () => {
   assert.equal(PROFILES.adult, 17);
@@ -18,7 +18,7 @@ test('uses conservative adult and children CPS profiles', () => {
 });
 
 test('counts grapheme clusters rather than UTF-16 code units', () => {
-  assert.equal(countGraphemes('e\\u0301'), 1);
+  assert.equal(countGraphemes('e\u0301'), 1);
   assert.equal(countGraphemes('👨‍👩‍👧‍👦'), 1);
   assert.equal(countGraphemes('é'), 1);
 });
