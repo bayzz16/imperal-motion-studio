@@ -15,6 +15,7 @@
     "assets:preflight": "node scripts/render-preflight.cjs",
     "check": "npm run typecheck && npm test && npm run compositions",
     "captions:validate": "node scripts/validate-webvtt.cjs",
+    "captions:cps": "node scripts/analyze-subtitle-cps.cjs",
     "audio:loudness": "node scripts/analyze-loudness.cjs"
   },
   "dependencies": {
